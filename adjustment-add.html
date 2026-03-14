@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>CoreInventory • New Stock Adjustment</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="icon" href="data:," type="image/x-icon">
+
+  <style>
+    :root {
+      --bg:               #f8fafc;
+      --surface:          #ffffff;
+      --surface-hover:    #f1f5f9;
+      --text:             #0f172a;
+      --text-secondary:   #64748b;
+      --text-muted:       #94a3b8;
+      --border:           #e2e8f0;
+      --primary:          #3b82f6;
+      --primary-dark:     #2563eb;
+      --primary-light:    #bfdbfe;
+      --success:          #10b981;
+      --warning:          #f59e0b;
+      --danger:           #ef4444;
+      --radius:           10px;
+      --shadow-sm:        0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md:        0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    [data-theme="dark"] {
+      --bg:               #0f172a;
+      --surface:          #1e293b;
+      --surface-hover:    #334155;
+      --text:             #f1f5f9;
+      --text-secondary:   #94a3b8;
+      --text-muted:       #64748b;
+      --border:           #334155;
+      --primary-light:    #1e40af;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    .layout-container {
+      display: flex;
+    }
+
+    .main-content {
+      flex: 1;
+      margin-left: 240px;
+      padding: 2rem 1.5rem;
+      max-width: 1400px;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .page-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-hover);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-title {
+      font-size: 1.18rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .form-section {
+      padding: 1.75rem 2rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem 2rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-weight: 500;
+      font-size: 0.94rem;
+      color: var(--text-secondary);
+    }
+
+    input, select, textarea {
+      padding: 0.7rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.96rem;
+      background: var(--surface);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.4rem;
+      border-radius: var(--radius);
+      font-weight: 500;
+      font-size: 0.96rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-secondary {
+      background: var(--surface-hover);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: #e2e8f0;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .line-items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+
+    .line-items-table th,
+    .line-items-table td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .line-items-table th {
+      background: var(--surface-hover);
+      font-weight: 600;
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+    }
+
+    .qty-input {
+      width: 90px;
+      text-align: center;
+    }
+
+    .remove-btn {
+      background: none;
+      border: none;
+      color: var(--danger);
+      font-size: 1.3rem;
+      cursor: pointer;
+      padding: 0 0.5rem;
+    }
+
+    .add-line-btn {
+      margin-top: 1rem;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      border: 1px solid var(--primary);
+    }
+
+    .add-line-btn:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .summary-box {
+      background: var(--surface-hover);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-top: 1.5rem;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.6rem;
+      font-size: 0.98rem;
+    }
+
+    .summary-total {
+      font-size: 1.15rem;
+      font-weight: 700;
+      border-top: 1px solid var(--border);
+      padding-top: 0.8rem;
+      margin-top: 0.5rem;
+    }
+
+    .message {
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius);
+      margin: 1rem 0;
+      display: none;
+    }
+
+    .success {
+      background: #d1fae5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+    }
+
+    .error {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    @media (max-width: 992px) {
+      .main-content { margin-left: 0; padding: 1.25rem; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="layout-container">
+    <main class="main-content">
+
+      <header class="page-header">
+        <h1 class="page-title">Create New Stock Adjustment</h1>
+        <div>
+          <button class="btn btn-secondary">Save as Draft</button>
+          <button class="btn btn-primary" id="submitAdjustment">Submit Adjustment</button>
+        </div>
+      </header>
+
+      <div id="successMsg" class="message success">Adjustment created successfully! Redirecting...</div>
+      <div id="errorMsg" class="message error">Please fill all required fields and check quantities.</div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Adjustment Details</h2>
+        </div>
+        <div class="form-section">
+          <div class="form-grid">
+
+            <div class="form-group">
+              <label for="adjustmentRef">Reference Number <span style="color:var(--danger);">*</span></label>
+              <input type="text" id="adjustmentRef" placeholder="ADJ-2026-XXXX" required>
+            </div>
+
+            <div class="form-group">
+              <label for="adjustmentDate">Adjustment Date <span style="color:var(--danger);">*</span></label>
+              <input type="date" id="adjustmentDate" required value="2026-03-14">
+            </div>
+
+            <div class="form-group">
+              <label for="adjustmentType">Adjustment Type <span style="color:var(--danger);">*</span></label>
+              <select id="adjustmentType" required>
+                <option value="">Select type...</option>
+                <option value="addition">Addition (Increase stock)</option>
+                <option value="deduction">Deduction (Decrease stock)</option>
+                <option value="correction">Correction (Fix count error)</option>
+                <option value="damage">Damage / Loss / Write-off</option>
+                <option value="theft">Theft / Missing</option>
+                <option value="found">Found / Returned stock</option>
+              </select>
+            </div>
+
+            <div class="form-group full-width">
+              <label for="reason">Reason / Notes</label>
+              <textarea id="reason" placeholder="Explain why this adjustment is needed... (e.g. physical count variance, damaged goods, supplier return, etc.)" rows="4"></textarea>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Products to Adjust</h2>
+        </div>
+        <div class="form-section">
+
+          <table class="line-items-table" id="lineItemsTable">
+            <thead>
+              <tr>
+                <th style="width:45%">Product / SKU</th>
+                <th style="width:18%">Current Stock</th>
+                <th style="width:18%">New Quantity</th>
+                <th style="width:15%">Difference</th>
+                <th style="width:4%"></th>
+              </tr>
+            </thead>
+            <tbody id="lineItemsBody"></tbody>
+          </table>
+
+          <button type="button" class="btn add-line-btn" id="addLineItem">
+            + Add Product
+          </button>
+
+          <div class="summary-box">
+            <div class="summary-row">
+              <span>Total items affected:</span>
+              <strong id="totalItems">0</strong>
+            </div>
+            <div class="summary-row summary-total">
+              <span>Net stock change:</span>
+              <strong id="netChange">0 units</strong>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div style="display:flex; gap:1rem; justify-content:flex-end; margin-top:2rem;">
+        <button class="btn btn-secondary">Cancel</button>
+        <button class="btn btn-primary" id="submitAdjustmentBottom">Submit Adjustment</button>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    // ────────────────────────────────────────────────
+    //   adjustment-add.html — Embedded JavaScript
+    // ────────────────────────────────────────────────
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+      const lineItemsBody = document.getElementById('lineItemsBody');
+      const totalItemsEl  = document.getElementById('totalItems');
+      const netChangeEl   = document.getElementById('netChange');
+      const addLineBtn    = document.getElementById('addLineItem');
+      const submitBtn     = document.getElementById('submitAdjustment');
+      const submitBtnBottom = document.getElementById('submitAdjustmentBottom');
+      const successMsg    = document.getElementById('successMsg');
+      const errorMsg      = document.getElementById('errorMsg');
+
+      let lineItemCounter = 0;
+
+      // Sample products (in real app → fetch from API / localStorage)
+      const sampleProducts = [
+        { sku: 'PROD-001', name: 'Wireless Mouse', currentStock: 142 },
+        { sku: 'PROD-002', name: 'USB-C Cable 2m', currentStock: 89 },
+        { sku: 'PROD-003', name: 'Laptop Stand', currentStock: 34 },
+        { sku: 'PROD-004', name: 'HDMI Cable', currentStock: 211 },
+        { sku: 'PROD-005', name: 'External SSD 1TB', currentStock: 18 },
+      ];
+
+      function addLineItem() {
+        lineItemCounter++;
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>
+            <select class="product-select" required>
+              <option value="">Select product...</option>
+              ${sampleProducts.map(p => `<option value="${p.sku}" data-stock="${p.currentStock}">${p.name} (${p.sku})</option>`).join('')}
+            </select>
+          </td>
+          <td class="current-stock-cell">-</td>
+          <td>
+            <input type="number" class="qty-input new-qty" min="0" value="0" required>
+          </td>
+          <td class="diff-cell">0</td>
+          <td>
+            <button type="button" class="remove-btn" title="Remove line">×</button>
+          </td>
+        `;
+
+        lineItemsBody.appendChild(row);
+
+        // Events for this row
+        const select = row.querySelector('.product-select');
+        const currentStockCell = row.querySelector('.current-stock-cell');
+        const qtyInput = row.querySelector('.new-qty');
+        const diffCell = row.querySelector('.diff-cell');
+        const removeBtn = row.querySelector('.remove-btn');
+
+        select.addEventListener('change', () => {
+          const stock = select.selectedOptions[0]?.dataset.stock || 0;
+          currentStockCell.textContent = stock;
+          updateDifference(qtyInput, stock, diffCell);
+          updateSummary();
+        });
+
+        qtyInput.addEventListener('input', () => {
+          const stock = select.selectedOptions[0]?.dataset.stock || 0;
+          updateDifference(qtyInput, stock, diffCell);
+          updateSummary();
+        });
+
+        removeBtn.addEventListener('click', () => {
+          row.remove();
+          updateSummary();
+        });
+
+        updateSummary();
+      }
+
+      function updateDifference(qtyInput, currentStock, diffCell) {
+        const newQty = parseInt(qtyInput.value) || 0;
+        const diff = newQty - currentStock;
+        diffCell.textContent = diff;
+        diffCell.style.color = diff > 0 ? 'var(--success)' : diff < 0 ? 'var(--danger)' : 'var(--text-muted)';
+      }
+
+      function updateSummary() {
+        const rows = lineItemsBody.querySelectorAll('tr');
+        let totalItems = rows.length;
+        let netChange = 0;
+
+        rows.forEach(row => {
+          const diffCell = row.querySelector('.diff-cell');
+          if (diffCell) {
+            netChange += parseInt(diffCell.textContent) || 0;
+          }
+        });
+
+        totalItemsEl.textContent = totalItems;
+        netChangeEl.textContent = `${netChange > 0 ? '+' : ''}${netChange} units`;
+        netChangeEl.style.color = netChange > 0 ? 'var(--success)' : netChange < 0 ? 'var(--danger)' : 'var(--text)';
+      }
+
+      function validateForm() {
+        let valid = true;
+        errorMsg.style.display = 'none';
+
+        // Required fields
+        const required = ['adjustmentRef', 'adjustmentDate', 'adjustmentType'];
+        required.forEach(id => {
+          const el = document.getElementById(id);
+          if (!el.value.trim()) {
+            valid = false;
+            el.style.borderColor = 'var(--danger)';
+          } else {
+            el.style.borderColor = 'var(--border)';
+          }
+        });
+
+        // At least one line item
+        if (lineItemsBody.querySelectorAll('tr').length === 0) {
+          valid = false;
+          alert('Please add at least one product to adjust.');
+        }
+
+        // Check every line has product & quantity
+        document.querySelectorAll('.product-select').forEach(sel => {
+          if (!sel.value) valid = false;
+        });
+
+        return valid;
+      }
+
+      function submitForm() {
+        if (!validateForm()) {
+          errorMsg.style.display = 'block';
+          return;
+        }
+
+        successMsg.style.display = 'block';
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+
+        // In real app → send to backend
+        console.log('Adjustment submitted:', {
+          ref: document.getElementById('adjustmentRef').value,
+          date: document.getElementById('adjustmentDate').value,
+          type: document.getElementById('adjustmentType').value,
+          reason: document.getElementById('reason').value,
+          items: Array.from(lineItemsBody.querySelectorAll('tr')).map(row => {
+            const sel = row.querySelector('.product-select');
+            const qty = row.querySelector('.new-qty').value;
+            return {
+              sku: sel.value,
+              name: sel.options[sel.selectedIndex].text,
+              newQty: qty
+            };
+          })
+        });
+
+        setTimeout(() => {
+          window.location.href = 'adjustments.html';
+        }, 1800);
+      }
+
+      // Bind events
+      addLineBtn.addEventListener('click', addLineItem);
+      submitBtn.addEventListener('click', submitForm);
+      submitBtnBottom.addEventListener('click', submitForm);
+
+      // Add first empty line
+      addLineItem();
+
+      // Theme persistence (same as other pages)
+      if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    });
+  </script>
+
+</body>
+</html>

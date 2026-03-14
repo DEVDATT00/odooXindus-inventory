@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>CoreInventory • Create New Stock Transfer</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="icon" href="data:," type="image/x-icon">
+
+  <style>
+    :root {
+      --bg:               #f8fafc;
+      --surface:          #ffffff;
+      --surface-hover:    #f1f5f9;
+      --text:             #0f172a;
+      --text-secondary:   #64748b;
+      --text-muted:       #94a3b8;
+      --border:           #e2e8f0;
+      --primary:          #3b82f6;
+      --primary-dark:     #2563eb;
+      --primary-light:    #bfdbfe;
+      --success:          #10b981;
+      --warning:          #f59e0b;
+      --danger:           #ef4444;
+      --radius:           10px;
+      --shadow-sm:        0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md:        0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    [data-theme="dark"] {
+      --bg:               #0f172a;
+      --surface:          #1e293b;
+      --surface-hover:    #334155;
+      --text:             #f1f5f9;
+      --text-secondary:   #94a3b8;
+      --text-muted:       #64748b;
+      --border:           #334155;
+      --primary-light:    #1e40af;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      min-height: 100vh;
+    }
+
+    .layout-container { display: flex; }
+
+    .main-content {
+      flex: 1;
+      margin-left: 240px;
+      padding: 2rem 1.5rem;
+      max-width: 1400px;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .page-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-hover);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-title {
+      font-size: 1.18rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .form-section {
+      padding: 1.75rem 2rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem 2rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-weight: 500;
+      font-size: 0.94rem;
+      color: var(--text-secondary);
+    }
+
+    input, select, textarea {
+      padding: 0.7rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.96rem;
+      background: var(--surface);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+    }
+
+    textarea { min-height: 90px; resize: vertical; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.4rem;
+      border-radius: var(--radius);
+      font-weight: 500;
+      font-size: 0.96rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary   { background: var(--primary); color: white; }
+    .btn-primary:hover   { background: var(--primary-dark); }
+    .btn-secondary { background: var(--surface-hover); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: #e2e8f0; }
+
+    .line-items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+
+    .line-items-table th,
+    .line-items-table td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .line-items-table th {
+      background: var(--surface-hover);
+      font-weight: 600;
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+    }
+
+    .qty-input {
+      width: 100px;
+      text-align: center;
+    }
+
+    .remove-btn {
+      background: none;
+      border: none;
+      color: var(--danger);
+      font-size: 1.4rem;
+      cursor: pointer;
+      padding: 0 0.6rem;
+    }
+
+    .add-line-btn {
+      margin-top: 1rem;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      border: 1px solid var(--primary);
+    }
+
+    .add-line-btn:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .summary-box {
+      background: var(--surface-hover);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-top: 1.5rem;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.6rem;
+      font-size: 0.98rem;
+    }
+
+    .summary-total {
+      font-size: 1.15rem;
+      font-weight: 700;
+      border-top: 1px solid var(--border);
+      padding-top: 0.8rem;
+      margin-top: 0.5rem;
+    }
+
+    .message {
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius);
+      margin: 1rem 0;
+      display: none;
+    }
+
+    .success { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+    .error   { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+
+    @media (max-width: 992px) {
+      .main-content { margin-left: 0; padding: 1.25rem; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="layout-container">
+    <main class="main-content">
+
+      <header class="page-header">
+        <h1 class="page-title">Create New Stock Transfer</h1>
+        <div>
+          <button class="btn btn-secondary">Save Draft</button>
+          <button class="btn btn-primary" id="submitTransfer">Submit Transfer</button>
+        </div>
+      </header>
+
+      <div id="successMsg" class="message success">Transfer request created! Redirecting to transfers list...</div>
+      <div id="errorMsg" class="message error">Please complete all required fields and verify quantities.</div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Transfer Information</h2>
+        </div>
+        <div class="form-section">
+          <div class="form-grid">
+
+            <div class="form-group">
+              <label for="transferRef">Reference Number <span style="color:var(--danger);">*</span></label>
+              <input type="text" id="transferRef" placeholder="TRF-2026-XXXX" required>
+            </div>
+
+            <div class="form-group">
+              <label for="transferDate">Transfer Date <span style="color:var(--danger);">*</span></label>
+              <input type="date" id="transferDate" required value="2026-03-14">
+            </div>
+
+            <div class="form-group">
+              <label for="sourceLocation">From Location <span style="color:var(--danger);">*</span></label>
+              <select id="sourceLocation" required>
+                <option value="">Select source...</option>
+                <option value="WH-A">Warehouse A (Main)</option>
+                <option value="WH-B">Warehouse B (Secondary)</option>
+                <option value="STORE-1">Store 1 - Ahmedabad</option>
+                <option value="STORE-2">Store 2 - Surat</option>
+                <option value="STORE-3">Store 3 - Vadodara</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="destLocation">To Location <span style="color:var(--danger);">*</span></label>
+              <select id="destLocation" required>
+                <option value="">Select destination...</option>
+                <option value="WH-A">Warehouse A (Main)</option>
+                <option value="WH-B">Warehouse B (Secondary)</option>
+                <option value="STORE-1">Store 1 - Ahmedabad</option>
+                <option value="STORE-2">Store 2 - Surat</option>
+                <option value="STORE-3">Store 3 - Vadodara</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="expectedDelivery">Expected Delivery Date</label>
+              <input type="date" id="expectedDelivery">
+            </div>
+
+            <div class="form-group full-width">
+              <label for="transferNotes">Notes / Instructions</label>
+              <textarea id="transferNotes" placeholder="Any special handling instructions, transport details, priority level, etc..."></textarea>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Products to Transfer</h2>
+        </div>
+        <div class="form-section">
+
+          <table class="line-items-table" id="lineItemsTable">
+            <thead>
+              <tr>
+                <th style="width:45%">Product / SKU</th>
+                <th style="width:18%">Available Stock</th>
+                <th style="width:18%">Transfer Qty</th>
+                <th style="width:15%">After Transfer</th>
+                <th style="width:4%"></th>
+              </tr>
+            </thead>
+            <tbody id="lineItemsBody"></tbody>
+          </table>
+
+          <button type="button" class="btn add-line-btn" id="addLineItem">
+            + Add Product
+          </button>
+
+          <div class="summary-box">
+            <div class="summary-row">
+              <span>Total products:</span>
+              <strong id="totalItems">0</strong>
+            </div>
+            <div class="summary-row">
+              <span>Total units to transfer:</span>
+              <strong id="totalUnits">0</strong>
+            </div>
+            <div class="summary-row summary-total">
+              <span>Lines with issues:</span>
+              <strong id="issueCount" style="color:var(--danger);">0</strong>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div style="display:flex; gap:1rem; justify-content:flex-end; margin-top:2rem;">
+        <button class="btn btn-secondary">Cancel</button>
+        <button class="btn btn-primary" id="submitTransferBottom">Submit Transfer Request</button>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    // ────────────────────────────────────────────────
+    //   transfer-add.html — Embedded JavaScript
+    // ────────────────────────────────────────────────
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+      const lineItemsBody   = document.getElementById('lineItemsBody');
+      const totalItemsEl    = document.getElementById('totalItems');
+      const totalUnitsEl    = document.getElementById('totalUnits');
+      const issueCountEl    = document.getElementById('issueCount');
+      const addLineBtn      = document.getElementById('addLineItem');
+      const submitBtn       = document.getElementById('submitTransfer');
+      const submitBtnBottom = document.getElementById('submitTransferBottom');
+      const successMsg      = document.getElementById('successMsg');
+      const errorMsg        = document.getElementById('errorMsg');
+
+      let lineCounter = 0;
+
+      // Demo product catalog (in real app → from API or products.js)
+      const products = [
+        { sku: 'PROD-001', name: 'Wireless Mouse', stock: { 'WH-A': 142, 'WH-B': 65, 'STORE-1': 28, 'STORE-2': 0, 'STORE-3': 12 } },
+        { sku: 'PROD-002', name: 'USB-C Cable 2m', stock: { 'WH-A': 89, 'WH-B': 210, 'STORE-1': 45, 'STORE-2': 8, 'STORE-3': 31 } },
+        { sku: 'PROD-003', name: 'Laptop Stand', stock: { 'WH-A': 34, 'WH-B': 15, 'STORE-1': 72, 'STORE-2': 19, 'STORE-3': 4 } },
+        { sku: 'PROD-004', name: 'HDMI Cable', stock: { 'WH-A': 211, 'WH-B': 98, 'STORE-1': 67, 'STORE-2': 33, 'STORE-3': 55 } },
+        { sku: 'PROD-005', name: 'External SSD 1TB', stock: { 'WH-A': 18, 'WH-B': 42, 'STORE-1': 5, 'STORE-2': 0, 'STORE-3': 9 } },
+      ];
+
+      function addLineItem() {
+        lineCounter++;
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>
+            <select class="product-select" required>
+              <option value="">Select product...</option>
+              ${products.map(p => `<option value="${p.sku}">${p.name} (${p.sku})</option>`).join('')}
+            </select>
+          </td>
+          <td class="avail-stock">-</td>
+          <td>
+            <input type="number" class="qty-input transfer-qty" min="1" value="0" required>
+          </td>
+          <td class="after-stock">-</td>
+          <td>
+            <button type="button" class="remove-btn" title="Remove item">×</button>
+          </td>
+        `;
+
+        lineItemsBody.appendChild(row);
+
+        const select      = row.querySelector('.product-select');
+        const availCell   = row.querySelector('.avail-stock');
+        const qtyInput    = row.querySelector('.transfer-qty');
+        const afterCell   = row.querySelector('.after-stock');
+        const removeBtn   = row.querySelector('.remove-btn');
+
+        function updateStockDisplay() {
+          const source = document.getElementById('sourceLocation')?.value || '';
+          const sku = select.value;
+
+          if (!sku || !source) {
+            availCell.textContent = '-';
+            afterCell.textContent = '-';
+            afterCell.style.color = 'var(--text-muted)';
+            return;
+          }
+
+          const product = products.find(p => p.sku === sku);
+          if (!product) return;
+
+          const currentStock = product.stock[source] || 0;
+          availCell.textContent = currentStock;
+
+          const qty = parseInt(qtyInput.value) || 0;
+          const after = currentStock - qty;
+
+          afterCell.textContent = after;
+          afterCell.style.color = after < 0 ? 'var(--danger)' : after === 0 ? 'var(--warning)' : 'var(--success)';
+        }
+
+        select.addEventListener('change', updateStockDisplay);
+        qtyInput.addEventListener('input', updateStockDisplay);
+
+        // Update on source change (global)
+        document.getElementById('sourceLocation')?.addEventListener('change', () => {
+          document.querySelectorAll('.product-select').forEach(s => {
+            if (s.value) updateStockDisplay.call(s.closest('tr'));
+          });
+        });
+
+        removeBtn.addEventListener('click', () => {
+          row.remove();
+          updateSummary();
+        });
+
+        updateSummary();
+      }
+
+      function updateSummary() {
+        const rows = lineItemsBody.querySelectorAll('tr');
+        let totalItems = rows.length;
+        let totalUnits = 0;
+        let issues = 0;
+
+        rows.forEach(row => {
+          const qty = parseInt(row.querySelector('.transfer-qty')?.value) || 0;
+          totalUnits += qty;
+
+          const after = parseInt(row.querySelector('.after-stock')?.textContent) || 0;
+          if (after < 0) issues++;
+        });
+
+        totalItemsEl.textContent = totalItems;
+        totalUnitsEl.textContent = totalUnits;
+        issueCountEl.textContent = issues;
+        issueCountEl.style.color = issues > 0 ? 'var(--danger)' : 'var(--success)';
+      }
+
+      function validateForm() {
+        let valid = true;
+        errorMsg.style.display = 'none';
+
+        const required = ['transferRef', 'transferDate', 'sourceLocation', 'destLocation'];
+        required.forEach(id => {
+          const el = document.getElementById(id);
+          if (!el.value.trim()) {
+            valid = false;
+            el.style.borderColor = 'var(--danger)';
+          } else {
+            el.style.borderColor = 'var(--border)';
+          }
+        });
+
+        if (document.getElementById('sourceLocation').value === document.getElementById('destLocation').value) {
+          valid = false;
+          alert('Source and destination locations cannot be the same.');
+        }
+
+        if (lineItemsBody.querySelectorAll('tr').length === 0) {
+          valid = false;
+          alert('Add at least one product to transfer.');
+        }
+
+        // Check quantities
+        document.querySelectorAll('.transfer-qty').forEach(input => {
+          const qty = parseInt(input.value) || 0;
+          if (qty <= 0) valid = false;
+        });
+
+        document.querySelectorAll('.after-stock').forEach(cell => {
+          if (parseInt(cell.textContent) < 0) valid = false;
+        });
+
+        return valid;
+      }
+
+      function submitForm() {
+        if (!validateForm()) {
+          errorMsg.style.display = 'block';
+          return;
+        }
+
+        successMsg.style.display = 'block';
+        submitBtn.disabled = submitBtnBottom.disabled = true;
+        submitBtn.textContent = submitBtnBottom.textContent = 'Submitting...';
+
+        // Demo log — in real app → POST to API
+        const payload = {
+          ref: document.getElementById('transferRef').value,
+          date: document.getElementById('transferDate').value,
+          source: document.getElementById('sourceLocation').value,
+          destination: document.getElementById('destLocation').value,
+          expected: document.getElementById('expectedDelivery').value,
+          notes: document.getElementById('transferNotes').value,
+          items: Array.from(lineItemsBody.querySelectorAll('tr')).map(row => {
+            const sel = row.querySelector('.product-select');
+            return {
+              sku: sel.value,
+              name: sel.options[sel.selectedIndex].text,
+              qty: row.querySelector('.transfer-qty').value
+            };
+          })
+        };
+
+        console.log('Transfer submitted:', payload);
+
+        setTimeout(() => {
+          window.location.href = 'transfers.html';
+        }, 1800);
+      }
+
+      addLineBtn.addEventListener('click', addLineItem);
+      submitBtn.addEventListener('click', submitForm);
+      submitBtnBottom.addEventListener('click', submitForm);
+
+      // Add initial empty row
+      addLineItem();
+
+      // Theme
+      if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    });
+  </script>
+
+</body>
+</html>

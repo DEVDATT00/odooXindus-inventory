@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>CoreInventory • Settings</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="icon" href="data:," type="image/x-icon">
+
+  <style>
+    :root {
+      --bg:               #f8fafc;
+      --surface:          #ffffff;
+      --surface-hover:    #f1f5f9;
+      --text:             #0f172a;
+      --text-secondary:   #64748b;
+      --text-muted:       #94a3b8;
+      --border:           #e2e8f0;
+      --primary:          #3b82f6;
+      --primary-dark:     #2563eb;
+      --primary-light:    #bfdbfe;
+      --success:          #10b981;
+      --warning:          #f59e0b;
+      --danger:           #ef4444;
+      --radius:           10px;
+      --shadow-sm:        0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md:        0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    [data-theme="dark"] {
+      --bg:               #0f172a;
+      --surface:          #1e293b;
+      --surface-hover:    #334155;
+      --text:             #f1f5f9;
+      --text-secondary:   #94a3b8;
+      --text-muted:       #64748b;
+      --border:           #334155;
+      --primary-light:    #1e40af;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      min-height: 100vh;
+    }
+
+    .layout-container { display: flex; }
+
+    .main-content {
+      flex: 1;
+      margin-left: 240px;
+      padding: 2rem 1.5rem;
+      max-width: 1100px;
+    }
+
+    .page-header {
+      margin-bottom: 2.5rem;
+    }
+
+    .page-title {
+      font-size: 1.9rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .page-subtitle {
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+    }
+
+    .settings-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 2rem;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .section-header {
+      padding: 1.25rem 1.75rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-hover);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .section-icon {
+      font-size: 1.5rem;
+    }
+
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .section-body {
+      padding: 1.75rem 2rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 1.8rem 2.2rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-weight: 500;
+      font-size: 0.96rem;
+      color: var(--text-secondary);
+    }
+
+    input, select {
+      padding: 0.75rem 1.1rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.97rem;
+      background: var(--surface);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+    }
+
+    .toggle-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 54px;
+      height: 28px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 28px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--primary);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+
+    .message {
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius);
+      margin: 1.2rem 0;
+      display: none;
+    }
+
+    .success {
+      background: #d1fae5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+    }
+
+    .error {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    .danger-zone {
+      background: #fff1f2;
+      border: 1px solid #fecaca;
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    [data-theme="dark"] .danger-zone {
+      background: #450a0a;
+      border-color: #991b1b;
+    }
+
+    .btn {
+      padding: 0.7rem 1.5rem;
+      border-radius: var(--radius);
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary   { background: var(--primary); color: white; }
+    .btn-primary:hover   { background: var(--primary-dark); }
+    .btn-outline   { border: 1px solid var(--border); background: transparent; color: var(--text); }
+    .btn-outline:hover   { background: var(--surface-hover); }
+    .btn-danger    { background: var(--danger); color: white; }
+
+    @media (max-width: 992px) {
+      .main-content { margin-left: 0; padding: 1.25rem; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="layout-container">
+    <main class="main-content">
+
+      <header class="page-header">
+        <div>
+          <h1 class="page-title">Settings</h1>
+          <p class="page-subtitle">Manage your account, preferences and application behavior</p>
+        </div>
+      </header>
+
+      <!-- Profile Section -->
+      <div class="settings-section">
+        <div class="section-header">
+          <span class="section-icon">👤</span>
+          <h2 class="section-title">Profile & Account</h2>
+        </div>
+        <div class="section-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="fullName">Full Name</label>
+              <input type="text" id="fullName" value="Devdatt Patel" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input type="email" id="email" value="devdatt@example.com" disabled>
+            </div>
+            <div class="form-group">
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" value="+91 98765 43210">
+            </div>
+            <div class="form-group full-width">
+              <label for="bio">Short Bio / Role</label>
+              <input type="text" id="bio" value="Inventory Administrator • Ahmedabad">
+            </div>
+          </div>
+
+          <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
+            <button class="btn btn-outline">Cancel</button>
+            <button class="btn btn-primary" id="saveProfile">Save Profile</button>
+          </div>
+
+          <div id="profileSuccess" class="message success">Profile updated successfully!</div>
+          <div id="profileError" class="message error">Please fill required fields.</div>
+        </div>
+      </div>
+
+      <!-- Security Section -->
+      <div class="settings-section">
+        <div class="section-header">
+          <span class="section-icon">🔒</span>
+          <h2 class="section-title">Security & Password</h2>
+        </div>
+        <div class="section-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="currentPassword">Current Password</label>
+              <input type="password" id="currentPassword" placeholder="••••••••">
+            </div>
+            <div class="form-group">
+              <label for="newPassword">New Password</label>
+              <input type="password" id="newPassword" placeholder="At least 8 characters">
+            </div>
+            <div class="form-group">
+              <label for="confirmPassword">Confirm New Password</label>
+              <input type="password" id="confirmPassword" placeholder="Re-type new password">
+            </div>
+          </div>
+
+          <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
+            <button class="btn btn-primary" id="changePassword">Change Password</button>
+          </div>
+
+          <div id="passwordSuccess" class="message success">Password changed successfully! Please login again.</div>
+          <div id="passwordError" class="message error">Passwords do not match or are too short.</div>
+        </div>
+      </div>
+
+      <!-- Preferences Section -->
+      <div class="settings-section">
+        <div class="section-header">
+          <span class="section-icon">⚙️</span>
+          <h2 class="section-title">Preferences</h2>
+        </div>
+        <div class="section-body">
+          <div class="toggle-group">
+            <label for="darkModeToggle">Dark Mode</label>
+            <label class="toggle-switch">
+              <input type="checkbox" id="darkModeToggle">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="toggle-group" style="margin-top: 1.2rem;">
+            <label for="sidebarCollapsed">Collapse Sidebar by Default</label>
+            <label class="toggle-switch">
+              <input type="checkbox" id="sidebarCollapsed">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="toggle-group" style="margin-top: 1.2rem;">
+            <label for="notifications">Enable Email Notifications</label>
+            <label class="toggle-switch">
+              <input type="checkbox" id="notifications" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div style="margin-top: 2rem;">
+            <button class="btn btn-primary" id="savePreferences">Save Preferences</button>
+          </div>
+
+          <div id="prefSuccess" class="message success">Preferences saved.</div>
+        </div>
+      </div>
+
+      <!-- Danger Zone -->
+      <div class="danger-zone">
+        <h3 style="color:var(--danger); margin:0 0 1rem 0;">Danger Zone</h3>
+        <p style="margin-bottom:1.2rem;">These actions are irreversible.</p>
+
+        <div style="display:flex; gap:1.5rem; flex-wrap:wrap;">
+          <button class="btn btn-danger" id="logoutAll">Log out from all devices</button>
+          <button class="btn btn-danger" id="deleteAccount">Delete Account</button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    // ────────────────────────────────────────────────
+    //   settings.html — Embedded JavaScript
+    // ────────────────────────────────────────────────
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+      const darkModeToggle     = document.getElementById('darkModeToggle');
+      const sidebarToggle      = document.getElementById('sidebarCollapsed');
+      const notifications      = document.getElementById('notifications');
+      const saveProfileBtn     = document.getElementById('saveProfile');
+      const changePasswordBtn  = document.getElementById('changePassword');
+      const savePrefBtn        = document.getElementById('savePreferences');
+      const logoutAllBtn       = document.getElementById('logoutAll');
+      const deleteAccountBtn   = document.getElementById('deleteAccount');
+
+      // Load saved settings
+      if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        darkModeToggle.checked = true;
+      }
+
+      if (localStorage.getItem('sidebarCollapsed') === 'true') {
+        sidebarToggle.checked = true;
+      }
+
+      if (localStorage.getItem('notifications') !== 'false') {
+        notifications.checked = true;
+      }
+
+      // Dark mode toggle
+      darkModeToggle.addEventListener('change', () => {
+        const theme = darkModeToggle.checked ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+      });
+
+      // Sidebar collapse preference
+      sidebarToggle.addEventListener('change', () => {
+        localStorage.setItem('sidebarCollapsed', sidebarToggle.checked);
+      });
+
+      // Notifications toggle
+      notifications.addEventListener('change', () => {
+        localStorage.setItem('notifications', notifications.checked);
+      });
+
+      // Profile save simulation
+      saveProfileBtn?.addEventListener('click', () => {
+        const name = document.getElementById('fullName').value.trim();
+        if (name.length < 3) {
+          document.getElementById('profileError').style.display = 'block';
+          return;
+        }
+        document.getElementById('profileSuccess').style.display = 'block';
+        document.getElementById('profileError').style.display = 'none';
+        setTimeout(() => document.getElementById('profileSuccess').style.display = 'none', 4000);
+      });
+
+      // Password change simulation
+      changePasswordBtn?.addEventListener('click', () => {
+        const newPwd = document.getElementById('newPassword').value;
+        const confirm = document.getElementById('confirmPassword').value;
+
+        if (newPwd.length < 8 || newPwd !== confirm) {
+          document.getElementById('passwordError').style.display = 'block';
+          document.getElementById('passwordSuccess').style.display = 'none';
+          return;
+        }
+
+        document.getElementById('passwordSuccess').style.display = 'block';
+        document.getElementById('passwordError').style.display = 'none';
+
+        setTimeout(() => {
+          if (confirm('Password changed. Redirect to login?')) {
+            window.location.href = 'login.html';
+          }
+        }, 1800);
+      });
+
+      // Preferences save
+      savePrefBtn?.addEventListener('click', () => {
+        document.getElementById('prefSuccess').style.display = 'block';
+        setTimeout(() => document.getElementById('prefSuccess').style.display = 'none', 3000);
+      });
+
+      // Logout all simulation
+      logoutAllBtn?.addEventListener('click', () => {
+        if (confirm('Log out from all devices? You will need to sign in again.')) {
+          alert('Logged out from all sessions (demo)');
+          window.location.href = 'login.html';
+        }
+      });
+
+      // Delete account simulation
+      deleteAccountBtn?.addEventListener('click', () => {
+        if (prompt('Type DELETE to confirm account deletion:') === 'DELETE') {
+          alert('Account deletion requested (demo). This cannot be undone.');
+          window.location.href = 'signup.html';
+        } else {
+          alert('Deletion cancelled.');
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

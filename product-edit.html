@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>CoreInventory • Edit Product</title>
+
+  <!-- Google Fonts - Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="icon" href="data:," type="image/x-icon">
+
+  <style>
+    :root {
+      --bg:               #f8fafc;
+      --surface:          #ffffff;
+      --surface-hover:    #f1f5f9;
+      --text:             #0f172a;
+      --text-secondary:   #64748b;
+      --text-muted:       #94a3b8;
+      --border:           #e2e8f0;
+      --primary:          #3b82f6;
+      --primary-dark:     #2563eb;
+      --primary-light:    #60a5fa;
+      --success:          #10b981;
+      --warning:          #f59e0b;
+      --danger:           #ef4444;
+      --gray:             #6b7280;
+      --radius-sm:        6px;
+      --radius:           10px;
+      --radius-lg:        16px;
+      --shadow-sm:        0 1px 3px rgba(0,0,0,0.06);
+      --shadow:           0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+      --shadow-md:        0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+      --transition:       all 0.2s ease;
+    }
+
+    [data-theme="dark"] {
+      --bg:               #0f172a;
+      --surface:          #1e293b;
+      --surface-hover:    #334155;
+      --text:             #f1f5f9;
+      --text-secondary:   #94a3b8;
+      --text-muted:       #cbd5e1;
+      --border:           #334155;
+      --shadow-sm:        0 1px 3px rgba(0,0,0,0.3);
+      --shadow:           0 10px 15px -3px rgba(0,0,0,0.4);
+      --shadow-md:        0 20px 25px -5px rgba(0,0,0,0.5);
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      height: 100vh;
+    }
+
+    .sidebar {
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 1.5rem 0;
+      overflow-y: auto;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .logo {
+      padding: 0 1.5rem 2rem;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -0.8px;
+    }
+
+    .nav-list {
+      list-style: none;
+    }
+
+    .nav-item a {
+      display: flex;
+      align-items: center;
+      padding: 0.9rem 1.5rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .nav-item a:hover,
+    .nav-item a.active {
+      background: rgba(59,130,246,0.08);
+      color: var(--primary);
+    }
+
+    .nav-item svg {
+      width: 22px;
+      height: 22px;
+      margin-right: 14px;
+      stroke: currentColor;
+      stroke-width: 2;
+    }
+
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1.2rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.15rem;
+    }
+
+    .theme-toggle {
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: var(--text-secondary);
+    }
+
+    .main-content {
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .form-container {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border);
+      padding: 2.2rem;
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    .form-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1.2rem;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .form-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+    }
+
+    .product-id {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    .form-section {
+      margin-bottom: 2.5rem;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1.2rem;
+      color: var(--primary);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.6rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.4rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.96rem;
+      font-weight: 500;
+      margin-bottom: 0.55rem;
+      color: var(--text-secondary);
+    }
+
+    .input-field,
+    .select-field,
+    .textarea-field {
+      width: 100%;
+      padding: 0.9rem 1.1rem;
+      font-size: 0.98rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg);
+      color: var(--text);
+      transition: var(--transition);
+    }
+
+    .input-field:focus,
+    .select-field:focus,
+    .textarea-field:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+    }
+
+    .textarea-field {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .image-preview {
+      width: 180px;
+      height: 180px;
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface-hover);
+      margin-top: 0.8rem;
+      overflow: hidden;
+    }
+
+    .image-preview img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .current-image-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.4rem;
+    }
+
+    .btn {
+      padding: 0.9rem 1.8rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 1rem;
+    }
+
+    .btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+
+    .btn-secondary {
+      background: var(--gray);
+    }
+
+    .btn-secondary:hover {
+      background: #4b5563;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .success-message,
+    .error-message {
+      padding: 1rem;
+      border-radius: var(--radius);
+      margin: 1.5rem 0;
+      text-align: center;
+      display: none;
+    }
+
+    .success-message {
+      background: rgba(16,185,129,0.15);
+      color: var(--success);
+    }
+
+    .error-message {
+      background: rgba(239,68,68,0.15);
+      color: var(--danger);
+    }
+
+    .meta-info {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-top: 2rem;
+      text-align: center;
+    }
+
+    @media (max-width: 992px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+    }
+
+    @media (max-width: 768px) {
+      .form-actions { flex-direction: column; }
+      .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo">CoreInventory</div>
+    
+    <ul class="nav-list">
+      <li class="nav-item"><a href="dashboard.html">
+        <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+        Dashboard
+      </a></li>
+      <li class="nav-item"><a href="products.html" class="active">
+        <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"/></svg>
+        Products
+      </a></li>
+      <li class="nav-item"><a href="receipts.html">
+        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/></svg>
+        Receipts
+      </a></li>
+      <li class="nav-item"><a href="deliveries.html">
+        <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM4 18V6h16v12H4z"/></svg>
+        Deliveries
+      </a></li>
+      <li class="nav-item"><a href="transfers.html">
+        <svg viewBox="0 0 24 24"><path d="M16 11l-6-6v4H2v4h8v4l6-6zM20 4h-6v2h6v12h-6v2h6c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"/></svg>
+        Transfers
+      </a></li>
+      <li class="nav-item"><a href="adjustments.html">
+        <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+        Adjustments
+      </a></li>
+      <li class="nav-item"><a href="stock-history.html">
+        <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9z"/></svg>
+        Stock History
+      </a></li>
+      <li class="nav-item"><a href="settings.html">
+        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.48-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+        Settings
+      </a></li>
+    </ul>
+  </aside>
+
+  <div>
+
+    <header class="header">
+      <h1>Edit Product</h1>
+      
+      <div class="user-info">
+        <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+        <div class="avatar">VI</div>
+        <div>
+          <div style="font-weight:600;">vgec ict 009 d2d</div>
+          <div style="font-size:0.88rem; color:var(--text-secondary);">Inventory Manager</div>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-content">
+
+      <div class="form-container">
+
+        <div class="form-header">
+          <div>
+            <h2 class="form-title">Edit: Wireless Mouse Logitech M185</h2>
+            <div class="product-id">SKU: PROD-001 • Last updated: March 12, 2026</div>
+          </div>
+          <a href="products.html" style="color:var(--text-secondary); text-decoration:none; font-weight:500;">← Back to list</a>
+        </div>
+
+        <form id="editProductForm" novalidate>
+
+          <!-- Basic Information -->
+          <div class="form-section">
+            <h3 class="section-title">Basic Information</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label" for="sku">SKU / Product Code <span style="color:var(--danger);">*</span></label>
+                <input type="text" id="sku" class="input-field" value="PROD-001" required maxlength="20">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="name">Product Name <span style="color:var(--danger);">*</span></label>
+                <input type="text" id="name" class="input-field" value="Wireless Mouse Logitech M185" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="category">Category</label>
+                <select id="category" class="select-field">
+                  <option value="">Select category</option>
+                  <option value="electronics" selected>Electronics</option>
+                  <option value="accessories">Accessories</option>
+                  <option value="peripherals">Peripherals</option>
+                  <option value="office">Office Supplies</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="uom">Unit of Measurement <span style="color:var(--danger);">*</span></label>
+                <select id="uom" class="select-field" required>
+                  <option value="">Select UOM</option>
+                  <option value="pcs" selected>Pieces (Pcs)</option>
+                  <option value="box">Box</option>
+                  <option value="kg">Kilogram (kg)</option>
+                  <option value="m">Meter (m)</option>
+                  <option value="l">Liter (L)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stock & Pricing -->
+          <div class="form-section">
+            <h3 class="section-title">Stock & Pricing</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label" for="currentStock">Current Stock Quantity</label>
+                <input type="number" id="currentStock" class="input-field" value="342" min="0" readonly style="background:#f1f5f9;">
+                <small style="color:var(--text-muted); display:block; margin-top:0.4rem;">(Updated via receipts/deliveries/adjustments)</small>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="minStock">Minimum Stock Level (for alerts)</label>
+                <input type="number" id="minStock" class="input-field" value="20" min="0">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="costPrice">Cost Price (₹)</label>
+                <input type="number" id="costPrice" class="input-field" value="450.00" min="0" step="0.01">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="sellPrice">Selling Price (₹) <span style="color:var(--danger);">*</span></label>
+                <input type="number" id="sellPrice" class="input-field" value="799.00" min="0" step="0.01" required>
+              </div>
+            </div>
+          </div>
+
+          <!-- Attributes & Description -->
+          <div class="form-section">
+            <h3 class="section-title">Description & Attributes</h3>
+            <div class="form-group">
+              <label class="form-label" for="description">Product Description</label>
+              <textarea id="description" class="textarea-field">Reliable wireless mouse with nano receiver, up to 12-month battery life, comfortable shape, precise optical tracking. Plug-and-play setup.</textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Product Image</label>
+              <input type="file" id="image" accept="image/*" style="margin-top:0.5rem;">
+              <div class="image-preview" id="preview">
+                <!-- In real app: load existing image URL -->
+                <img src="https://via.placeholder.com/180x180/3b82f6/ffffff?text=Mouse" alt="Current product image">
+              </div>
+              <div class="current-image-label">Current image (click to replace)</div>
+            </div>
+          </div>
+
+          <div id="successMsg" class="success-message">
+            Product updated successfully!
+          </div>
+
+          <div id="errorMsg" class="error-message">
+            Please correct the highlighted fields.
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" onclick="window.location.href='products.html'">Cancel</button>
+            <button type="submit" class="btn">Update Product</button>
+            <button type="button" class="btn btn-danger" onclick="if(confirm('Delete this product permanently?')) alert('Product deleted (demo)');">Delete Product</button>
+          </div>
+
+        </form>
+
+        <div class="meta-info">
+          Created: February 15, 2025 • Last modified by: vgec ict 009 d2d on March 12, 2026
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script>
+  
+  function toggleTheme() {
+    const html = document.documentElement;
+    const current = html.getAttribute('data-theme') || 'light';
+    const next = current === 'light' ? 'dark' : 'light';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  }
+
+  if (localStorage.getItem('theme') === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+
+  // Image preview (same as add page)
+  document.getElementById('image')?.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        document.getElementById('preview').innerHTML = `<img src="${ev.target.result}" alt="Updated preview">`;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Form validation (client-side simulation)
+  document.getElementById('editProductForm')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const requiredFields = ['sku', 'name', 'uom', 'sellPrice'];
+    let isValid = true;
+
+    requiredFields.forEach(id => {
+      const field = document.getElementById(id);
+      if (!field.value.trim()) {
+        field.style.borderColor = 'var(--danger)';
+        isValid = false;
+      } else {
+        field.style.borderColor = 'var(--border)';
+      }
+    });
+
+    if (!isValid) {
+      document.getElementById('errorMsg').style.display = 'block';
+      setTimeout(() => document.getElementById('errorMsg').style.display = 'none', 4000);
+      return;
+    }
+
+    document.getElementById('successMsg').style.display = 'block';
+    setTimeout(() => {
+      window.location.href = 'products.html';
+    }, 1600);
+  });
+  
+   function loadUser(){
+
+const user = JSON.parse(localStorage.getItem("user"));
+
+if(!user) return;
+
+const avatar = document.querySelector(".avatar");
+const nameElement = document.querySelector(".user-info div div:nth-child(1)");
+const roleElement = document.querySelector(".user-info div div:nth-child(2)");
+const welcome = document.getElementById("welcome-user");
+
+avatar.textContent = user.name.charAt(0).toUpperCase();
+nameElement.textContent = user.name;
+roleElement.textContent = user.role;
+
+
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<!-- 
+  sidebar.html — CoreInventory Navigation Sidebar
+  Version: expanded for completeness — >350 lines total
+  Consistent with your existing design tokens
+-->
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="logo-container">
+            <div class="logo-icon-wrapper">
+                <span class="logo-icon">📦</span>
+            </div>
+            <div class="logo-text-wrapper">
+                <h1 class="logo-main">CoreInventory</h1>
+                <p class="logo-subtitle">Inventory • Made Simple</p>
+            </div>
+        </div>
+
+        <button class="sidebar-toggle" id="sidebarToggleBtn" aria-label="Toggle sidebar visibility"
+            title="Collapse / Expand Sidebar">
+            <span class="toggle-icon">«</span>
+        </button>
+    </div>
+
+    <!-- Main Navigation -->
+    <nav class="sidebar-navigation" aria-label="Main navigation">
+        <ul class="nav-list primary-nav">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link" data-page="dashboard">
+                    <span class="nav-icon">🏠</span>
+                    <span class="nav-label">Dashboard</span>
+                    <span class="nav-badge" data-count="0"></span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="products.html" class="nav-link" data-page="products">
+                    <span class="nav-icon">📦</span>
+                    <span class="nav-label">Products</span>
+                </a>
+            </li>
+
+            <li class="nav-item has-submenu">
+                <a href="#" class="nav-link submenu-toggle" data-submenu="purchases">
+                    <span class="nav-icon">📥</span>
+                    <span class="nav-label">Purchases</span>
+                    <span class="submenu-arrow">›</span>
+                </a>
+                <ul class="submenu" id="purchases-submenu">
+                    <li><a href="receipts.html">Receipts / GRN</a></li>
+                    <li><a href="receipt-add.html">+ New Receipt</a></li>
+                    <li><a href="#">Purchase Orders</a></li>
+                </ul>
+            </li>
+
+            <li class="nav-item has-submenu">
+                <a href="#" class="nav-link submenu-toggle" data-submenu="sales">
+                    <span class="nav-icon">🚚</span>
+                    <span class="nav-label">Sales</span>
+                    <span class="submenu-arrow">›</span>
+                </a>
+                <ul class="submenu" id="sales-submenu">
+                    <li><a href="deliveries.html">Deliveries / Outward</a></li>
+                    <li><a href="delivery-add.html">+ New Delivery</a></li>
+                    <li><a href="#">Sales Orders</a></li>
+                    <li><a href="#">Invoices</a></li>
+                </ul>
+            </li>
+
+            <li class="nav-item">
+                <a href="transfers.html" class="nav-link" data-page="transfers">
+                    <span class="nav-icon">↔️</span>
+                    <span class="nav-label">Stock Transfers</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="adjustments.html" class="nav-link" data-page="adjustments">
+                    <span class="nav-icon">⚖️</span>
+                    <span class="nav-label">Adjustments</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="stock-history.html" class="nav-link" data-page="stock-history">
+                    <span class="nav-icon">📈</span>
+                    <span class="nav-label">Stock History</span>
+                </a>
+            </li>
+
+            <li class="nav-item separator"></li>
+
+            <li class="nav-item">
+                <a href="#" class="nav-link reports-link">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">Reports</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="#" class="nav-link analytics-link">
+                    <span class="nav-icon">📉</span>
+                    <span class="nav-label">Analytics</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- User & Settings Section -->
+    <div class="sidebar-bottom-section">
+        <div class="user-profile-mini">
+            <div class="avatar-wrapper">
+                <div class="avatar-initials">DD</div>
+            </div>
+            <div class="user-info">
+                <span class="user-name">Devdatt</span>
+                <span class="user-role">Administrator</span>
+            </div>
+        </div>
+
+        <ul class="nav-list secondary-nav">
+            <li class="nav-item">
+                <a href="settings.html" class="nav-link" data-page="settings">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-label">Settings</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link logout-link" id="logoutTrigger">
+                    <span class="nav-icon">↩️</span>
+                    <span class="nav-label">Sign Out</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="theme-toggle-wrapper">
+            <button class="theme-toggle-btn" id="themeToggle" aria-label="Toggle dark/light mode">
+                <span class="theme-icon">☀️</span>
+                <span class="theme-label">Theme</span>
+            </button>
+        </div>
+
+        <div class="app-version">
+            <small>Version 1.2.4 • 2026</small>
+        </div>
+    </div>
+</aside>
+
+<!-- ──────────────────────────────────────────────── -->
+<!--                   STYLES                         -->
+<!-- ──────────────────────────────────────────────── -->
+
+<style>
+    :root {
+        --sidebar-width: 240px;
+        --sidebar-collapsed-width: 72px;
+        --sidebar-bg: var(--surface, #ffffff);
+        --sidebar-border: var(--border, #e2e8f0);
+        --nav-hover: var(--surface-hover, #f1f5f9);
+        --nav-active-bg: rgba(59, 130, 246, 0.08);
+        --nav-active-border: var(--primary, #3b82f6);
+        --text-primary: var(--text, #0f172a);
+        --text-secondary: var(--text-secondary, #64748b);
+    }
+
+    [data-theme="dark"] {
+        --sidebar-bg: #0f172a;
+        --sidebar-border: #1e293b;
+        --nav-hover: #1e293b;
+        --nav-active-bg: rgba(59, 130, 246, 0.16);
+    }
+
+    .sidebar {
+        width: var(--sidebar-width);
+        background: var(--sidebar-bg);
+        border-right: 1px solid var(--sidebar-border);
+        height: 100vh;
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 900;
+        transition: width 0.28s ease, transform 0.28s ease;
+        overflow-y: auto;
+        overflow-x: hidden;
+        font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    .sidebar.collapsed {
+        width: var(--sidebar-collapsed-width);
+    }
+
+    .sidebar.collapsed .nav-label,
+    .sidebar.collapsed .logo-subtitle,
+    .sidebar.collapsed .user-name,
+    .sidebar.collapsed .user-role,
+    .sidebar.collapsed .theme-label,
+    .sidebar.collapsed .app-version {
+        opacity: 0;
+        visibility: hidden;
+        width: 0;
+    }
+
+    .sidebar-header {
+        padding: 1.25rem 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--sidebar-border);
+        min-height: 68px;
+    }
+
+    .logo-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .logo-icon-wrapper {
+        font-size: 2.1rem;
+        line-height: 1;
+    }
+
+    .logo-text-wrapper h1 {
+        margin: 0;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.02em;
+    }
+
+    .logo-subtitle {
+        margin: 0;
+        font-size: 0.78rem;
+        color: var(--text-secondary);
+        opacity: 0.85;
+    }
+
+    .sidebar-toggle {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--text-secondary);
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+
+    .sidebar-toggle:hover {
+        background: var(--nav-hover);
+        color: var(--text-primary);
+    }
+
+    .sidebar-navigation {
+        padding: 1.25rem 0;
+    }
+
+    .nav-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .nav-item {
+        position: relative;
+    }
+
+    .nav-item.separator {
+        height: 1px;
+        background: var(--sidebar-border);
+        margin: 1rem 1.25rem;
+    }
+
+    .nav-link {
+        display: flex;
+        align-items: center;
+        padding: 0.82rem 1.25rem;
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: all 0.18s ease;
+        border-left: 3px solid transparent;
+    }
+
+    .nav-link:hover {
+        background: var(--nav-hover);
+        color: var(--text-primary);
+    }
+
+    .nav-link.active,
+    .nav-link[data-active="true"] {
+        background: var(--nav-active-bg);
+        color: var(--primary, #3b82f6);
+        border-left-color: var(--nav-active-border);
+        font-weight: 500;
+    }
+
+    .nav-icon {
+        font-size: 1.35rem;
+        width: 28px;
+        text-align: center;
+        margin-right: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .nav-label {
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .nav-badge {
+        background: var(--primary);
+        color: white;
+        font-size: 0.68rem;
+        padding: 2px 7px;
+        border-radius: 10px;
+        margin-left: auto;
+        min-width: 18px;
+        text-align: center;
+        opacity: 0;
+    }
+
+    .has-submenu .submenu-toggle .submenu-arrow {
+        margin-left: auto;
+        font-size: 1.1rem;
+        transition: transform 0.25s ease;
+    }
+
+    .has-submenu .submenu-toggle[aria-expanded="true"] .submenu-arrow {
+        transform: rotate(90deg);
+    }
+
+    .submenu {
+        list-style: none;
+        padding: 0.25rem 0 0.75rem 2.8rem;
+        margin: 0;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.32s ease;
+    }
+
+    .submenu.show {
+        max-height: 400px;
+        /* large enough for most cases */
+    }
+
+    .submenu a {
+        display: block;
+        padding: 0.62rem 0;
+        color: var(--text-secondary);
+        font-size: 0.94rem;
+        text-decoration: none;
+    }
+
+    .submenu a:hover {
+        color: var(--text-primary);
+    }
+
+    /* Bottom section */
+    .sidebar-bottom-section {
+        padding: 1.25rem 0;
+        border-top: 1px solid var(--sidebar-border);
+        margin-top: auto;
+    }
+
+    .user-profile-mini {
+        display: flex;
+        align-items: center;
+        padding: 0.8rem 1.25rem;
+        gap: 12px;
+    }
+
+    .avatar-wrapper {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: var(--primary-light, #bfdbfe);
+        color: var(--primary-dark, #1e40af);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .user-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .user-name {
+        display: block;
+        font-weight: 600;
+        font-size: 0.96rem;
+        color: var(--text-primary);
+    }
+
+    .user-role {
+        display: block;
+        font-size: 0.78rem;
+        color: var(--text-secondary);
+    }
+
+    .theme-toggle-wrapper {
+        padding: 0.8rem 1.25rem;
+    }
+
+    .theme-toggle-btn {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0.65rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--surface-hover);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .theme-toggle-btn:hover {
+        background: var(--surface);
+        border-color: var(--primary);
+    }
+
+    .app-version {
+        text-align: center;
+        padding: 1rem 0;
+        color: var(--text-muted, #94a3b8);
+        font-size: 0.74rem;
+    }
+
+    @media (max-width: 992px) {
+        .sidebar {
+            transform: translateX(-100%);
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+    }
+</style>
+
+<!-- ──────────────────────────────────────────────── -->
+<!--                   JAVASCRIPT                     -->
+<!-- ──────────────────────────────────────────────── -->
+
+<script>
+    // Sidebar interactions — expanded version
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('sidebarToggleBtn');
+        const themeToggle = document.getElementById('themeToggle');
+        const logoutTrigger = document.getElementById('logoutTrigger');
+
+        // 1. Sidebar collapse / expand (desktop)
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('collapsed');
+                localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+            });
+
+            // Restore previous state
+            if (localStorage.getItem('sidebarCollapsed') === 'true') {
+                sidebar.classList.add('collapsed');
+            }
+        }
+
+        // 2. Mobile sidebar toggle
+        const mobileToggle = document.querySelector('[data-action="open-sidebar"]');
+        if (mobileToggle) {
+            mobileToggle.addEventListener('click', () => {
+                sidebar.classList.add('active');
+            });
+        }
+
+        // Close sidebar when clicking outside (mobile)
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 992 &&
+                !sidebar.contains(e.target) &&
+                !e.target.closest('[data-action="open-sidebar"]')) {
+                sidebar.classList.remove('active');
+            }
+        });
+
+        // 3. Theme toggle
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                const current = document.documentElement.getAttribute('data-theme') || 'light';
+                const next = current === 'light' ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', next);
+                localStorage.setItem('theme', next);
+
+                // Update icon
+                themeToggle.querySelector('.theme-icon').textContent = next === 'dark' ? '🌙' : '☀️';
+            });
+
+            // Init from localStorage
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                themeToggle.querySelector('.theme-icon').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+            }
+        }
+
+        // 4. Submenu toggles
+        document.querySelectorAll('.submenu-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function (e) {
+                e.preventDefault();
+                const submenuId = this.getAttribute('data-submenu');
+                const submenu = document.getElementById(submenuId + '-submenu');
+                const isExpanded = this.getAttribute('aria-expanded') === 'true';
+
+                this.setAttribute('aria-expanded', !isExpanded);
+                submenu?.classList.toggle('show');
+            });
+        });
+
+        // 5. Logout simulation
+        if (logoutTrigger) {
+            logoutTrigger.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (confirm('Are you sure you want to sign out?')) {
+                    // In real app → clear token, redirect
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 400);
+                }
+            });
+        }
+
+        // 6. Highlight current page more reliably
+        const currentPath = window.location.pathname.split('/').pop() || 'dashboard.html';
+        document.querySelectorAll('.nav-link[data-page]').forEach(link => {
+            const page = link.getAttribute('data-page') + '.html';
+            if (page === currentPath || (currentPath === '' && page === 'dashboard.html')) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>

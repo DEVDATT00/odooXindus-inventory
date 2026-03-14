@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>CoreInventory • Dashboard</title>
+
+  <!-- Google Fonts - Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="icon" href="data:," type="image/x-icon">
+
+  <style>
+    /***************************************************************
+     * CoreInventory - Design System
+     ***************************************************************/
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-hover: #f1f5f9;
+      --text: #0f172a;
+      --text-secondary: #64748b;
+      --text-muted: #94a3b8;
+      --border: #e2e8f0;
+      --primary: #3b82f6;
+      --primary-dark: #2563eb;
+      --primary-light: #60a5fa;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --gray: #6b7280;
+      --radius-sm: 6px;
+      --radius: 10px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --transition: all 0.2s ease;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface-hover: #334155;
+      --text: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #cbd5e1;
+      --border: #334155;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+      --shadow-md: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 1.5rem 0;
+      overflow-y: auto;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .logo {
+      padding: 0 1.5rem 2rem;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -0.8px;
+    }
+
+    .nav-list {
+      list-style: none;
+    }
+
+    .nav-item a {
+      display: flex;
+      align-items: center;
+      padding: 0.9rem 1.5rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .nav-item a:hover,
+    .nav-item a.active {
+      background: rgba(59, 130, 246, 0.08);
+      color: var(--primary);
+    }
+
+    .nav-item svg {
+      width: 22px;
+      height: 22px;
+      margin-right: 14px;
+      stroke: currentColor;
+      stroke-width: 2;
+    }
+
+    /* Header */
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1.2rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.15rem;
+    }
+
+    .theme-toggle {
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: var(--text-secondary);
+    }
+
+    .logout-btn {
+      background: var(--danger);
+      color: white;
+      border: none;
+      padding: 0.55rem 1.2rem;
+      border-radius: var(--radius);
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .logout-btn:hover {
+      background: #dc2626;
+    }
+
+    /* Main Content */
+    .main-content {
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .welcome-card {
+      background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .welcome-card h2 {
+      font-size: 1.8rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 1.6rem;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .stat-label {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin-bottom: 0.6rem;
+    }
+
+    .stat-value {
+      font-size: 2.4rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+    }
+
+    .stat-trend {
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .trend-up {
+      color: var(--success);
+    }
+
+    .trend-down {
+      color: var(--danger);
+    }
+
+    .section-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin: 2.5rem 0 1.2rem;
+    }
+
+    .alerts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .alert-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 1.4rem;
+      border-left: 5px solid var(--warning);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .alert-title {
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+    }
+
+    .quick-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .action-btn {
+      padding: 0.8rem 1.4rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .action-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 992px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">CoreInventory</div>
+
+      <ul class="nav-list">
+        <li class="nav-item"><a href="dashboard.html" class="active">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" />
+            </svg>
+            Dashboard
+          </a></li>
+        <li class="nav-item"><a href="products.html">
+            <svg viewBox="0 0 24 24">
+              <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z" />
+            </svg>
+            Products
+          </a></li>
+        <li class="nav-item"><a href="receipts.html">
+            <svg viewBox="0 0 24 24">
+              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z" />
+            </svg>
+            Receipts
+          </a></li>
+        <li class="nav-item"><a href="deliveries.html">
+            <svg viewBox="0 0 24 24">
+              <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM4 18V6h16v12H4z" />
+            </svg>
+            Deliveries
+          </a></li>
+        <li class="nav-item"><a href="transfers.html">
+            <svg viewBox="0 0 24 24">
+              <path d="M16 11l-6-6v4H2v4h8v4l6-6zM20 4h-6v2h6v12h-6v2h6c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z" />
+            </svg>
+            Transfers
+          </a></li>
+        <li class="nav-item"><a href="adjustments.html">
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+            </svg>
+            Adjustments
+          </a></li>
+        <li class="nav-item"><a href="stock-history.html">
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9z" />
+            </svg>
+            Stock History
+          </a></li>
+        <li class="nav-item"><a href="settings.html">
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.48-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" />
+            </svg>
+            Settings
+          </a></li>
+      </ul>
+    </aside>
+
+    <!-- Main Area -->
+    <div class="main-area">
+
+      <header class="header">
+        <h1>Dashboard</h1>
+
+        <div class="user-info">
+          <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+          <div class="avatar">VI</div>
+          <div>
+            <div style="font-weight:600;">vgec ict 009 d2d</div>
+            <div style="font-size:0.88rem; color:var(--text-secondary);">Inventory Manager</div>
+          </div>
+          <button class="logout-btn">Logout</button>
+        </div>
+      </header>
+
+      <main class="main-content">
+
+        <div class="welcome-card">
+          <h2 id="welcome-user">Welcome back</h2>
+          <p style="opacity:0.9; max-width:600px;">
+            Here's what's happening with your inventory today • Real-time overview •
+            Last updated: March 14, 2026
+          </p>
+        </div>
+
+        <div class="stats-grid">
+          <!-- Total Products -->
+          <div class="stat-card">
+            <div class="stat-label">Total Products</div>
+            <div class="stat-value" id="total-products">—</div>
+            <div class="stat-trend trend-up" id="products-trend">loading...</div>
+          </div>
+
+          <!-- Stock Value -->
+          <div class="stat-card">
+            <div class="stat-label">Current Stock Value</div>
+            <div class="stat-value" id="stock-value">—</div>
+            <div class="stat-trend trend-up" id="value-trend">loading...</div>
+          </div>
+
+          <!-- Low Stock -->
+          <div class="stat-card">
+            <div class="stat-label">Low Stock Alerts</div>
+            <div class="stat-value" style="color:var(--warning);" id="low-stock">—</div>
+            <div class="stat-trend" style="color:var(--warning);" id="low-stock-trend">loading...</div>
+          </div>
+
+          <!-- Pending Receipts -->
+          <div class="stat-card">
+            <div class="stat-label">Pending Receipts</div>
+            <div class="stat-value" style="color:var(--primary);" id="pending-receipts">—</div>
+            <div class="stat-trend" style="color:var(--primary);" id="pending-trend">loading...</div>
+          </div>
+        </div>
+
+        <h3 class="section-title">Low Stock Alerts</h3>
+        <div class="alerts-grid">
+          <div class="alert-card">
+            <div class="alert-title">Wireless Keyboard (SKU-0123)</div>
+            <p>Only <strong>8 units</strong> left in Main Warehouse • Reorder recommended</p>
+          </div>
+          <div class="alert-card">
+            <div class="alert-title">USB-C Cable 2m (SKU-0456)</div>
+            <p>Stock at <strong>15 units</strong> • Critical level reached</p>
+          </div>
+          <div class="alert-card">
+            <div class="alert-title">HDMI Adapter (SKU-0789)</div>
+            <p><strong>4 units</strong> remaining • Urgent restock needed</p>
+          </div>
+        </div>
+
+        <h3 class="section-title">Quick Actions</h3>
+        <div class="quick-actions">
+          <button class="action-btn">+ New Receipt</button>
+          <button class="action-btn">+ New Delivery</button>
+          <button class="action-btn">Create Transfer</button>
+          <button class="action-btn">Perform Adjustment</button>
+        </div>
+
+      </main>
+    </div>
+  </div>
+  <script>
+
+    document.addEventListener("DOMContentLoaded", () => {
+    
+        checkLogin();
+        loadUser();
+        loadDashboard();
+    
+    });
+    
+    
+    /* ===========================
+       CHECK LOGIN
+    =========================== */
+    
+    function checkLogin(){
+    
+        const user = localStorage.getItem("user");
+    
+        if(!user){
+    
+            window.location.href = "login.html";
+    
+        }
+    
+    }
+    
+    
+    /* ===========================
+       LOAD USER DETAILS
+    =========================== */
+    function loadUser(){
+
+const user = JSON.parse(localStorage.getItem("user"));
+
+if(!user) return;
+
+const avatar = document.querySelector(".avatar");
+const nameElement = document.querySelector(".user-info div div:nth-child(1)");
+const roleElement = document.querySelector(".user-info div div:nth-child(2)");
+const welcome = document.getElementById("welcome-user");
+
+avatar.textContent = user.name.charAt(0).toUpperCase();
+nameElement.textContent = user.name;
+roleElement.textContent = user.role;
+
+welcome.textContent = "Welcome back, " + user.name;
+
+}
+    
+    
+    /* ===========================
+       LOAD DASHBOARD DATA
+    =========================== */
+    
+    async function loadDashboard(){
+    
+        try{
+    
+            const response = await fetch("http://localhost:5000/api/dashboard/summary");
+    
+            if(!response.ok){
+    
+                console.error("API ERROR:",response.status);
+                return;
+    
+            }
+    
+            const data = await response.json();
+    
+            console.log("Dashboard Data:",data);
+    
+            document.getElementById("total-products").textContent =
+                data.total_products || 0;
+    
+            document.getElementById("stock-value").textContent =
+                data.total_stock || 0;
+    
+            document.getElementById("low-stock").textContent =
+                data.low_stock_items || 0;
+    
+            document.getElementById("pending-receipts").textContent =
+                data.pending_receipts || 0;
+                document.getElementById("products-trend").style.display = "none";
+document.getElementById("value-trend").style.display = "none";
+document.getElementById("low-stock-trend").style.display = "none";
+document.getElementById("pending-trend").style.display = "none";
+        }
+        catch(error){
+    
+            console.error("Dashboard loading failed:",error);
+    
+        }
+    
+    }
+    
+    
+    /* ===========================
+       LOGOUT
+    =========================== */
+    
+    document.querySelector(".logout-btn").addEventListener("click",()=>{
+    
+        localStorage.removeItem("user");
+    
+        window.location.href="login.html";
+    
+    });
+    
+    </script>
+</body>
+
+</html>

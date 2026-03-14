@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>CoreInventory • Transfer #TRF-2026-0156</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="icon" href="data:," type="image/x-icon">
+
+  <style>
+    :root {
+      --bg:               #f8fafc;
+      --surface:          #ffffff;
+      --surface-hover:    #f1f5f9;
+      --text:             #0f172a;
+      --text-secondary:   #64748b;
+      --text-muted:       #94a3b8;
+      --border:           #e2e8f0;
+      --primary:          #3b82f6;
+      --primary-dark:     #2563eb;
+      --primary-light:    #bfdbfe;
+      --success:          #10b981;
+      --warning:          #f59e0b;
+      --danger:           #ef4444;
+      --radius:           10px;
+      --shadow-sm:        0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md:        0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    [data-theme="dark"] {
+      --bg:               #0f172a;
+      --surface:          #1e293b;
+      --surface-hover:    #334155;
+      --text:             #f1f5f9;
+      --text-secondary:   #94a3b8;
+      --text-muted:       #64748b;
+      --border:           #334155;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      min-height: 100vh;
+    }
+
+    .layout-container { display: flex; }
+
+    .main-content {
+      flex: 1;
+      margin-left: 240px;
+      padding: 2rem 1.5rem;
+      max-width: 1400px;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .page-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .status-pill {
+      padding: 0.45rem 1.1rem;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .status-pending   { background: #fef3c7; color: #92400e; }
+    .status-in-transit{ background: #dbeafe; color: #1e40af; }
+    .status-delivered { background: #d1fae5; color: #065f46; }
+    .status-cancelled { background: #fee2e2; color: #991b1b; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-hover);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .card-title {
+      font-size: 1.18rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      padding: 1.5rem 2rem;
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .info-label {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .info-value {
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    .table-container { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.94rem;
+    }
+
+    th, td {
+      padding: 1rem 1.25rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: var(--surface-hover);
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      font-size: 0.82rem;
+    }
+
+    .timeline {
+      padding: 1.5rem 2rem;
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-left: 2.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .timeline-item:last-child { margin-bottom: 0; }
+
+    .timeline-dot {
+      position: absolute;
+      left: 0;
+      top: 0.35rem;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: 3px solid var(--surface);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
+    .timeline-item.pending .timeline-dot   { background: var(--warning); box-shadow: 0 0 0 3px #fef3c7; }
+    .timeline-item.cancelled .timeline-dot { background: var(--danger); box-shadow: 0 0 0 3px #fee2e2; }
+
+    .timeline-content strong {
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .timeline-time {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+
+    .actions-bar {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 1.25rem 2rem;
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 0.65rem 1.4rem;
+      border-radius: var(--radius);
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary   { background: var(--primary); color: white; }
+    .btn-primary:hover   { background: var(--primary-dark); }
+    .btn-outline   { border: 1px solid var(--border); background: transparent; color: var(--text); }
+    .btn-outline:hover   { background: var(--surface-hover); }
+    .btn-danger    { background: var(--danger); color: white; }
+
+    .notes-section {
+      padding: 1.5rem 2rem;
+      background: var(--surface-hover);
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 992px) {
+      .main-content { margin-left: 0; padding: 1.25rem; }
+      .info-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="layout-container">
+    <main class="main-content">
+
+      <header class="page-header">
+        <div>
+          <h1 class="page-title">Transfer #TRF-2026-0156</h1>
+          <div style="margin-top:0.5rem;">
+            <span class="status-pill status-in-transit">In Transit</span>
+          </div>
+        </div>
+        <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+          <button class="btn btn-outline">Print / PDF</button>
+          <button class="btn btn-outline">Cancel Transfer</button>
+          <button class="btn btn-primary">Mark as Delivered</button>
+        </div>
+      </header>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Transfer Details</h2>
+        </div>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Reference</div>
+            <div class="info-value"><strong>TRF-2026-0156</strong></div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Transfer Date</div>
+            <div class="info-value">March 13, 2026</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">From Location</div>
+            <div class="info-value">Warehouse A (Main)</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">To Location</div>
+            <div class="info-value">Store B – Ahmedabad</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Expected Delivery</div>
+            <div class="info-value">March 16, 2026</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Created By</div>
+            <div class="info-value">Rahul Sharma (Admin)</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Current Status</div>
+            <div class="info-value">
+              <strong>In Transit</strong> — Driver assigned, ETA 2 days
+            </div>
+          </div>
+        </div>
+
+        <div class="notes-section">
+          <div class="info-label">Notes / Instructions</div>
+          <div style="margin-top:0.6rem; white-space:pre-wrap;">
+            Urgent transfer for weekend sale. Please handle with care — fragile items included.
+            Transport: Company van #GJ-01-AB-1234. Contact driver: +91 98765 43210.
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Transferred Products (8 items)</h2>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Product / SKU</th>
+                <th>Quantity Transferred</th>
+                <th>From Stock Before</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Wireless Mouse (PROD-001)</td>
+                <td><strong>25</strong></td>
+                <td>142 → 117</td>
+                <td>High demand item</td>
+              </tr>
+              <tr>
+                <td>USB-C Cable 2m (PROD-002)</td>
+                <td><strong>40</strong></td>
+                <td>89 → 49</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>Laptop Stand (PROD-003)</td>
+                <td><strong>15</strong></td>
+                <td>34 → 19</td>
+                <td>Fragile — pack carefully</td>
+              </tr>
+              <tr>
+                <td>HDMI Cable (PROD-004)</td>
+                <td><strong>30</strong></td>
+                <td>211 → 181</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>External SSD 1TB (PROD-005)</td>
+                <td><strong>8</strong></td>
+                <td>18 → 10</td>
+                <td>Security seal required</td>
+              </tr>
+              <!-- ... more rows if needed ... -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Activity Timeline</h2>
+        </div>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <strong>Transfer Created</strong>
+              <div class="timeline-time">Mar 13, 2026 09:45 • by Rahul Sharma</div>
+              <div>Draft saved and submitted for approval</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <strong>Approved</strong>
+              <div class="timeline-time">Mar 13, 2026 11:20 • by Priya Patel</div>
+              <div>Stock reserved and transfer initiated</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <strong>In Transit</strong>
+              <div class="timeline-time">Mar 13, 2026 14:30 • System</div>
+              <div>Driver assigned • Vehicle GJ-01-AB-1234</div>
+            </div>
+          </div>
+          <div class="timeline-item pending">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <strong>Pending Delivery Confirmation</strong>
+              <div class="timeline-time">Expected: Mar 16, 2026</div>
+              <div>Waiting for store staff to receive & verify</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions-bar">
+        <button class="btn btn-outline">Back to List</button>
+        <button class="btn btn-danger">Cancel Transfer</button>
+        <button class="btn btn-primary">Mark as Delivered</button>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    // Simple theme persistence (same as other pages)
+    document.addEventListener('DOMContentLoaded', () => {
+      if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+
+      // Optional: dynamic status color update (if status changes via JS in future)
+      const statusPill = document.querySelector('.status-pill');
+      if (statusPill) {
+        console.log('Current transfer status:', statusPill.textContent.trim());
+      }
+    });
+  </script>
+
+</body>
+</html>
