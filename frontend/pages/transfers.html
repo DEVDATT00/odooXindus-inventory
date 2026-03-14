@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>CoreInventory • Stock Transfers</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="icon" href="data:," type="image/x-icon">
+
+  <style>
+    :root {
+      --bg:               #f8fafc;
+      --surface:          #ffffff;
+      --surface-hover:    #f1f5f9;
+      --text:             #0f172a;
+      --text-secondary:   #64748b;
+      --text-muted:       #94a3b8;
+      --border:           #e2e8f0;
+      --primary:          #3b82f6;
+      --primary-dark:     #2563eb;
+      --primary-light:    #60a5fa;
+      --success:          #10b981;
+      --warning:          #f59e0b;
+      --danger:           #ef4444;
+      --radius:           10px;
+      --shadow-sm:        0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md:        0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    [data-theme="dark"] {
+      --bg:               #0f172a;
+      --surface:          #1e293b;
+      --surface-hover:    #334155;
+      --text:             #f1f5f9;
+      --text-secondary:   #94a3b8;
+      --text-muted:       #64748b;
+      --border:           #334155;
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    .layout-container { display: flex; }
+
+    .main-content {
+      flex: 1;
+      margin-left: 240px;
+      padding: 1.5rem;
+      transition: margin-left 0.3s;
+    }
+
+    @media (max-width: 992px) {
+      .main-content { margin-left: 0; }
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .page-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.25rem;
+      border-radius: var(--radius);
+      font-weight: 500;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-outline:hover { background: var(--surface-hover); }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+    }
+
+    .filters {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .filter-group label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    input[type="text"], input[type="date"], select {
+      padding: 0.65rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      font-size: 0.94rem;
+      min-width: 160px;
+    }
+
+    .table-container { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.94rem;
+    }
+
+    th, td {
+      padding: 1rem 1.25rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: var(--surface-hover);
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      font-size: 0.82rem;
+      letter-spacing: 0.4px;
+    }
+
+    tr:hover { background: var(--surface-hover); }
+
+    .status-badge {
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      display: inline-block;
+    }
+
+    .status-pending   { background: #fef3c7; color: #92400e; }
+    .status-in-transit{ background: #dbeafe; color: #1e40af; }
+    .status-delivered { background: #d1fae5; color: #065f46; }
+    .status-cancelled { background: #fee2e2; color: #991b1b; }
+
+    .direction {
+      font-weight: 500;
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+
+    .dir-out { background: #fef2f2; color: #991b1b; }
+    .dir-in  { background: #ecfdf5; color: #065f46; }
+
+    .actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .action-link {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .action-link:hover {
+      color: var(--primary-dark);
+      text-decoration: underline;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .page-btn {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: 6px;
+      cursor: pointer;
+      min-width: 40px;
+      text-align: center;
+    }
+
+    .page-btn:hover { background: var(--surface-hover); }
+
+    .page-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    @media (max-width: 768px) {
+      .filters { flex-direction: column; }
+      .filter-group { width: 100%; }
+      input, select { min-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="layout-container">
+    <main class="main-content">
+
+      <header class="page-header">
+        <h1 class="page-title">Stock Transfers</h1>
+        <a href="transfer-add.html" class="btn btn-primary">
+          <span>+</span> New Transfer
+        </a>
+      </header>
+
+      <!-- Filters -->
+      <div class="filters">
+        <div class="filter-group">
+          <label for="search">Search</label>
+          <input type="text" id="search" placeholder="Reference / From / To / Product..." />
+        </div>
+        <div class="filter-group">
+          <label for="status">Status</label>
+          <select id="status">
+            <option value="">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="in-transit">In Transit</option>
+            <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="dateFrom">From Date</label>
+          <input type="date" id="dateFrom" />
+        </div>
+        <div class="filter-group">
+          <label for="dateTo">To Date</label>
+          <input type="date" id="dateTo" />
+        </div>
+      </div>
+
+      <!-- Transfers Table -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">All Transfers (Showing 1–12 of 87)</h2>
+          <div>
+            <button class="btn btn-outline">Export CSV</button>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Reference</th>
+                <th>Transfer Date</th>
+                <th>From → To</th>
+                <th>Direction</th>
+                <th>Items</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="transfersTableBody">
+              <tr>
+                <td><strong>TRF-2026-0156</strong></td>
+                <td>Mar 13, 2026</td>
+                <td>Warehouse A → Store B</td>
+                <td><span class="direction dir-out">Outbound</span></td>
+                <td>8 products</td>
+                <td><span class="status-badge status-in-transit">In Transit</span></td>
+                <td class="actions">
+                  <a href="transfer-view.html" class="action-link">View</a>
+                  <a href="#" class="action-link">Track</a>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>TRF-2026-0155</strong></td>
+                <td>Mar 12, 2026</td>
+                <td>Store C → Warehouse A</td>
+                <td><span class="direction dir-in">Inbound</span></td>
+                <td>4 products</td>
+                <td><span class="status-badge status-delivered">Delivered</span></td>
+                <td class="actions">
+                  <a href="transfer-view.html" class="action-link">View</a>
+                  <a href="#" class="action-link">Receipt</a>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>TRF-2026-0154</strong></td>
+                <td>Mar 11, 2026</td>
+                <td>Warehouse B → Store A</td>
+                <td><span class="direction dir-out">Outbound</span></td>
+                <td>12 products</td>
+                <td><span class="status-badge status-pending">Pending Approval</span></td>
+                <td class="actions">
+                  <a href="#" class="action-link">Approve</a>
+                  <a href="#" class="action-link">Reject</a>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>TRF-2026-0153</strong></td>
+                <td>Mar 10, 2026</td>
+                <td>Store B → Store C</td>
+                <td><span class="direction dir-out">Outbound</span></td>
+                <td>3 products</td>
+                <td><span class="status-badge status-cancelled">Cancelled</span></td>
+                <td class="actions">
+                  <a href="transfer-view.html" class="action-link">View</a>
+                </td>
+              </tr>
+              <!-- More rows would be dynamically loaded in real app -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination">
+        <button class="page-btn">« Prev</button>
+        <button class="page-btn active">1</button>
+        <button class="page-btn">2</button>
+        <button class="page-btn">3</button>
+        <button class="page-btn">Next »</button>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    // ────────────────────────────────────────────────
+    //   transfers.html — Embedded JavaScript
+    // ────────────────────────────────────────────────
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+      const searchInput = document.getElementById('search');
+      const statusFilter = document.getElementById('status');
+      const tableBody = document.getElementById('transfersTableBody');
+
+      // Simple client-side filtering
+      function applyFilters() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        const selectedStatus = statusFilter.value;
+
+        const rows = tableBody.querySelectorAll('tr');
+
+        rows.forEach(row => {
+          const text = row.textContent.toLowerCase();
+          const statusCell = row.querySelector('.status-badge');
+          const statusText = statusCell ? statusCell.textContent.toLowerCase() : '';
+
+          const matchesSearch = text.includes(searchTerm);
+          const matchesStatus = !selectedStatus || statusText.includes(selectedStatus.toLowerCase());
+
+          row.style.display = (matchesSearch && matchesStatus) ? '' : 'none';
+        });
+      }
+
+      if (searchInput) searchInput.addEventListener('input', applyFilters);
+      if (statusFilter) statusFilter.addEventListener('change', applyFilters);
+
+      // Theme persistence
+      if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+
+      // Optional: simulate date filter (client-side only - real app would query backend)
+      const dateFrom = document.getElementById('dateFrom');
+      const dateTo   = document.getElementById('dateTo');
+
+      if (dateFrom && dateTo) {
+        [dateFrom, dateTo].forEach(input => {
+          input.addEventListener('change', () => {
+            console.log('Date range changed (demo):', dateFrom.value, '→', dateTo.value);
+            // In real app → reload table or filter rows by date
+          });
+        });
+      }
+    });
+  </script>
+
+</body>
+</html>

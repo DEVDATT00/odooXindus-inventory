@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>CoreInventory • Delivery #DEL-2026-0789</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="icon" href="data:," type="image/x-icon">
+
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-hover: #f1f5f9;
+      --text: #0f172a;
+      --text-secondary: #64748b;
+      --text-muted: #94a3b8;
+      --border: #e2e8f0;
+      --primary: #3b82f6;
+      --primary-dark: #2563eb;
+      --primary-light: #bfdbfe;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --radius: 10px;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface-hover: #334155;
+      --text: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border: #334155;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      min-height: 100vh;
+    }
+
+    .layout-container {
+      display: flex;
+    }
+
+    .main-content {
+      flex: 1;
+      margin-left: 240px;
+      padding: 2rem 1.5rem;
+      max-width: 1400px;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .page-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .status-pill {
+      padding: 0.45rem 1.1rem;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+
+    .status-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-dispatched {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .status-delivered {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status-cancelled {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .status-returned {
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-hover);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .card-title {
+      font-size: 1.18rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      padding: 1.5rem 2rem;
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .info-label {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .info-value {
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.94rem;
+    }
+
+    th,
+    td {
+      padding: 1rem 1.25rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: var(--surface-hover);
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      font-size: 0.82rem;
+    }
+
+    .timeline {
+      padding: 1.5rem 2rem;
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-left: 2.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .timeline-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: 0;
+      top: 0.35rem;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: 3px solid var(--surface);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
+    .timeline-item.pending .timeline-dot {
+      background: var(--warning);
+      box-shadow: 0 0 0 3px #fef3c7;
+    }
+
+    .timeline-item.cancelled .timeline-dot {
+      background: var(--danger);
+      box-shadow: 0 0 0 3px #fee2e2;
+    }
+
+    .timeline-item.delivered .timeline-dot {
+      background: var(--success);
+      box-shadow: 0 0 0 3px #d1fae5;
+    }
+
+    .timeline-content strong {
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .timeline-time {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+
+    .actions-bar {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 1.25rem 2rem;
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 0.65rem 1.4rem;
+      border-radius: var(--radius);
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-outline {
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+    }
+
+    .btn-outline:hover {
+      background: var(--surface-hover);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .notes-section {
+      padding: 1.5rem 2rem;
+      background: var(--surface-hover);
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 992px) {
+      .main-content {
+        margin-left: 0;
+        padding: 1.25rem;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="layout-container">
+    <main class="main-content">
+
+      <header class="page-header">
+        <div>
+          <h1 class="page-title">Delivery #DEL-2026-0789</h1>
+          <div style="margin-top:0.5rem;">
+            <span class="status-pill status-dispatched">Dispatched</span>
+          </div>
+        </div>
+        <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+          <button class="btn btn-outline">Print Delivery Note</button>
+          <button class="btn btn-outline">Cancel Delivery</button>
+          <button class="btn btn-success">Mark as Delivered</button>
+        </div>
+      </header>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Delivery Details</h2>
+        </div>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Reference / Order #</div>
+            <div class="info-value"><strong>DEL-2026-0789</strong> / SO-2026-1123</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Delivery Date</div>
+            <div class="info-value">March 14, 2026</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Customer</div>
+            <div class="info-value">TechTrend Retail Pvt Ltd</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Delivery Address</div>
+            <div class="info-value">
+              304, Skyline Complex,<br>
+              Near SG Highway,<br>
+              Ahmedabad, Gujarat 380015
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Expected / Actual Delivery</div>
+            <div class="info-value">Expected: Mar 15, 2026<br>Actual: —</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Created By</div>
+            <div class="info-value">Priya Patel (Sales)</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Current Status</div>
+            <div class="info-value">
+              <strong>Dispatched</strong> — Out for delivery
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Transport / Vehicle</div>
+            <div class="info-value">Company Van #GJ-27-CD-5678<br>Driver: Vikram Singh (+91 98250 12345)</div>
+          </div>
+        </div>
+
+        <div class="notes-section">
+          <div class="info-label">Customer Notes / Special Instructions</div>
+          <div style="margin-top:0.6rem; white-space:pre-wrap;">
+            Please deliver before 2 PM if possible — urgent for store opening tomorrow.
+            Contact person: Mr. Amit Desai (98765 43210).
+            Do not leave package unattended at gate.
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Delivered Items (6 products)</h2>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Product / SKU</th>
+                <th>Ordered Qty</th>
+                <th>Shipped Qty</th>
+                <th>Unit Price</th>
+                <th>Total</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Wireless Mouse (PROD-001)</td>
+                <td>30</td>
+                <td><strong>30</strong></td>
+                <td>₹ 850.00</td>
+                <td>₹ 25,500.00</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>USB-C Cable 2m (PROD-002)</td>
+                <td>50</td>
+                <td><strong>50</strong></td>
+                <td>₹ 220.00</td>
+                <td>₹ 11,000.00</td>
+                <td>Bulk packed</td>
+              </tr>
+              <tr>
+                <td>Laptop Stand (PROD-003)</td>
+                <td>20</td>
+                <td><strong>18</strong></td>
+                <td>₹ 1,450.00</td>
+                <td>₹ 26,100.00</td>
+                <td>2 units short — backorder</td>
+              </tr>
+              <tr>
+                <td>HDMI Cable (PROD-004)</td>
+                <td>40</td>
+                <td><strong>40</strong></td>
+                <td>₹ 380.00</td>
+                <td>₹ 15,200.00</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>External SSD 1TB (PROD-005)</td>
+                <td>10</td>
+                <td><strong>10</strong></td>
+                <td>₹ 6,200.00</td>
+                <td>₹ 62,000.00</td>
+                <td>Serial numbers recorded</td>
+              </tr>
+              <tr>
+                <td>Keyboard & Mouse Combo (PROD-006)</td>
+                <td>15</td>
+                <td><strong>15</strong></td>
+                <td>₹ 1,980.00</td>
+                <td>₹ 29,700.00</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Activity & Status Timeline</h2>
+        </div>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <strong>Delivery Created</strong>
+              <div class="timeline-time">Mar 13, 2026 16:20 • by Priya Patel</div>
+              <div>Linked to Sales Order SO-2026-1123</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <strong>Picked & Packed</strong>
+              <div class="timeline-time">Mar 14, 2026 08:15 • by Warehouse Team</div>
+              <div>All items verified and packed</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <strong>Dispatched</strong>
+              <div class="timeline-time">Mar 14, 2026 09:10 • System</div>
+              <div>Handed over to driver • Vehicle GJ-27-CD-5678</div>
+            </div>
+          </div>
+          <div class="timeline-item pending">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <strong>Pending Delivery Confirmation</strong>
+              <div class="timeline-time">Expected: Mar 15, 2026 before 14:00</div>
+              <div>Awaiting customer receipt & sign-off</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions-bar">
+        <button class="btn btn-outline">Back to Deliveries</button>
+        <button class="btn btn-danger">Cancel Delivery</button>
+        <button class="btn btn-success">Confirm as Delivered</button>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    async function loadDelivery() {
+
+      const params = new URLSearchParams(window.location.search)
+      const id = params.get("id")
+
+      const res = await fetch(`/api/deliveries/${id}`)
+      const data = await res.json()
+
+      console.log(data)
+
+    }
+
+    loadDelivery()
+  </script>
+
+</body>
+
+</html>

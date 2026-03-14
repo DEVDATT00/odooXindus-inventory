@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CoreInventory • Secure Portal</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
+<style>
+
+:root{
+--bg:#f8fafc;
+--surface:#ffffff;
+--text:#0f172a;
+--text-secondary:#64748b;
+--border:#e2e8f0;
+--primary:#3b82f6;
+--primary-dark:#2563eb;
+--danger:#ef4444;
+--radius-lg:24px;
+--radius-md:12px;
+--transition:all .3s;
+}
+
+body{
+font-family:'Inter',sans-serif;
+background:var(--bg);
+min-height:100vh;
+display:flex;
+}
+
+.main-wrapper{
+display:flex;
+width:100%;
+}
+
+.branding-panel{
+flex:1;
+background:linear-gradient(135deg,#3b82f6,#2563eb);
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+padding:4rem;
+color:white;
+text-align:center;
+}
+
+.logo{
+font-size:3.5rem;
+font-weight:800;
+letter-spacing:-2px;
+}
+
+.form-panel{
+flex:1;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:2rem;
+}
+
+.card{
+background:white;
+border-radius:24px;
+padding:3rem;
+width:100%;
+max-width:520px;
+box-shadow:0 25px 50px -12px rgba(0,0,0,.08);
+}
+
+.tabs{
+display:flex;
+border-bottom:2px solid var(--border);
+margin-bottom:2rem;
+}
+
+.tab-btn{
+flex:1;
+padding:1rem;
+font-weight:700;
+cursor:pointer;
+}
+
+.tab-btn.active{
+color:var(--primary);
+border-bottom:4px solid var(--primary);
+}
+
+.input-group{
+margin-bottom:1rem;
+}
+
+.input-box{
+width:100%;
+padding:1rem;
+border:1px solid var(--border);
+border-radius:12px;
+}
+
+.btn-action{
+width:100%;
+padding:1rem;
+background:var(--primary);
+color:white;
+border-radius:12px;
+font-weight:700;
+margin-top:1rem;
+}
+
+.hidden{
+display:none;
+}
+
+#toast{
+position:fixed;
+bottom:2rem;
+left:50%;
+transform:translateX(-50%) translateY(100px);
+background:black;
+color:white;
+padding:12px 24px;
+border-radius:40px;
+transition:.4s;
+}
+
+#toast.visible{
+transform:translateX(-50%) translateY(0);
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="particles-js" class="fixed inset-0 pointer-events-none"></div>
+
+<div id="toast">Please check your details</div>
+
+<div class="main-wrapper">
+
+<div class="branding-panel">
+
+<div id="brand-anim">
+<div class="logo">Core<span style="font-weight:300">Inventory</span></div>
+
+<h1 class="text-3xl font-bold mt-4">Streamlined Accuracy</h1>
+
+<p class="opacity-80 mt-3">
+Professional inventory intelligence built for modern enterprises
+</p>
+</div>
+
+</div>
+
+
+<div class="form-panel">
+
+<div class="card">
+
+<div class="tabs">
+<button id="l-tab" class="tab-btn active" onclick="switchView('login')">Login</button>
+<button id="s-tab" class="tab-btn" onclick="switchView('signup')">Sign Up</button>
+</div>
+
+
+<form id="login-form">
+
+<div class="input-group">
+<input id="login-email" class="input-box" placeholder="Email">
+</div>
+
+<div class="input-group">
+<input type="password" id="login-pass" class="input-box" placeholder="Password">
+</div>
+<a href="forgot-password.html" class="text-sm text-blue-500 font-medium hover:underline">
+    Forgot Password?
+    </a>
+<button type="submit" class="btn-action">Authenticate →</button>
+
+</form>
+
+
+<form id="signup-form" class="hidden">
+
+<div class="input-group">
+<input id="reg-name" class="input-box" placeholder="Full Name">
+</div>
+
+<div class="input-group">
+<input id="reg-email" class="input-box" placeholder="Email">
+</div>
+<div class="input-group">
+    <label class="label-text"></label>
+    <select id="reg-role" class="input-box">
+    <option value="staff">Staff</option>
+    <option value="manager">Manager</option>
+    </select>
+    </div>
+<div class="input-group">
+<input type="password" id="reg-pass" class="input-box" placeholder="Password">
+</div>
+
+<div class="input-group">
+<input type="password" id="reg-confirm" class="input-box" placeholder="Confirm Password">
+</div>
+
+<button type="submit" class="btn-action">Create Account</button>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<script>
+
+function showToast(msg){
+const toast=document.getElementById("toast")
+toast.textContent=msg
+toast.classList.add("visible")
+setTimeout(()=>toast.classList.remove("visible"),3000)
+}
+
+
+function switchView(view){
+
+const login=document.getElementById("login-form")
+const signup=document.getElementById("signup-form")
+
+const ltab=document.getElementById("l-tab")
+const stab=document.getElementById("s-tab")
+
+if(view==="login"){
+login.classList.remove("hidden")
+signup.classList.add("hidden")
+ltab.classList.add("active")
+stab.classList.remove("active")
+}else{
+signup.classList.remove("hidden")
+login.classList.add("hidden")
+stab.classList.add("active")
+ltab.classList.remove("active")
+}
+
+}
+
+
+
+async function loginUser(email,password){
+
+const res=await fetch("http://localhost:5000/api/auth/login",{
+
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({email,password})
+
+})
+
+const data=await res.json()
+
+if(data.success){
+
+localStorage.setItem("user", JSON.stringify(data.user))
+
+showToast("Login successful")
+
+setTimeout(()=>{
+window.location.href="dashboard.html"
+},1000)
+
+}else{
+
+showToast(data.message || "Login failed")
+
+}
+
+}
+
+
+
+async function signupUser(name,email,password,role){
+
+const res=await fetch("http://localhost:5000/api/auth/signup",{
+
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+name:name,
+email:email,
+password:password,
+role:role
+})
+
+})
+
+const data=await res.json()
+
+if(data.success){
+
+showToast("Account created successfully")
+switchView("login")
+
+}else{
+
+showToast(data.message)
+
+}
+
+}
+
+
+
+document.getElementById("signup-form").onsubmit=function(e){
+
+e.preventDefault()
+
+const name=document.getElementById("reg-name").value
+const email=document.getElementById("reg-email").value
+const pass=document.getElementById("reg-pass").value
+const confirm=document.getElementById("reg-confirm").value
+const role=document.getElementById("reg-role").value
+
+if(pass!==confirm){
+showToast("Passwords do not match")
+return
+}
+
+signupUser(name,email,pass,role)
+
+}
+document.getElementById("login-form").onsubmit = function(e){
+
+e.preventDefault()
+
+const email = document.getElementById("login-email").value
+const pass = document.getElementById("login-pass").value
+
+loginUser(email, pass)
+
+}
+
+
+particlesJS("particles-js",{
+particles:{
+number:{value:60},
+color:{value:"#3b82f6"},
+shape:{type:"circle"},
+opacity:{value:.2},
+size:{value:3},
+line_linked:{enable:true,color:"#3b82f6",opacity:.1},
+move:{enable:true,speed:1.5}
+}
+})
+
+gsap.from("#brand-anim",{opacity:0,x:-40,duration:1.2})
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>CoreInventory • Create New Receipt</title>
+
+  <!-- Google Fonts - Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="icon" href="data:," type="image/x-icon">
+
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-hover: #f1f5f9;
+      --text: #0f172a;
+      --text-secondary: #64748b;
+      --text-muted: #94a3b8;
+      --border: #e2e8f0;
+      --primary: #3b82f6;
+      --primary-dark: #2563eb;
+      --primary-light: #60a5fa;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --gray: #6b7280;
+      --radius-sm: 6px;
+      --radius: 10px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --transition: all 0.2s ease;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface-hover: #334155;
+      --text: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #cbd5e1;
+      --border: #334155;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+      --shadow-md: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      height: 100vh;
+    }
+
+    .sidebar {
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 1.5rem 0;
+      overflow-y: auto;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .logo {
+      padding: 0 1.5rem 2rem;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -0.8px;
+    }
+
+    .nav-list {
+      list-style: none;
+    }
+
+    .nav-item a {
+      display: flex;
+      align-items: center;
+      padding: 0.9rem 1.5rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .nav-item a:hover,
+    .nav-item a.active {
+      background: rgba(59, 130, 246, 0.08);
+      color: var(--primary);
+    }
+
+    .nav-item svg {
+      width: 22px;
+      height: 22px;
+      margin-right: 14px;
+      stroke: currentColor;
+      stroke-width: 2;
+    }
+
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1.2rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.15rem;
+    }
+
+    .theme-toggle {
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: var(--text-secondary);
+    }
+
+    .main-content {
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .form-container {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border);
+      padding: 2.2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .form-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1.2rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .form-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+    }
+
+    .form-section {
+      margin-bottom: 2.8rem;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1.4rem;
+      color: var(--primary);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.8rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.96rem;
+      font-weight: 500;
+      margin-bottom: 0.6rem;
+      color: var(--text-secondary);
+    }
+
+    .input-field,
+    .select-field,
+    .date-field {
+      width: 100%;
+      padding: 0.9rem 1.1rem;
+      font-size: 0.98rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg);
+      color: var(--text);
+      transition: var(--transition);
+    }
+
+    .input-field:focus,
+    .select-field:focus,
+    .date-field:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    .line-items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0 1.5rem;
+    }
+
+    .line-items-table th,
+    .line-items-table td {
+      padding: 0.9rem 1rem;
+      border: 1px solid var(--border);
+      text-align: left;
+    }
+
+    .line-items-table th {
+      background: var(--surface-hover);
+      font-weight: 600;
+      color: var(--text-secondary);
+      font-size: 0.88rem;
+    }
+
+    .line-item-row input,
+    .line-item-row select {
+      width: 100%;
+      padding: 0.6rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+
+    .remove-btn {
+      background: var(--danger);
+      color: white;
+      border: none;
+      padding: 0.5rem 0.9rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .add-line-btn {
+      background: var(--success);
+      color: white;
+      border: none;
+      padding: 0.7rem 1.4rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 1rem;
+    }
+
+    .totals {
+      display: flex;
+      justify-content: flex-end;
+      gap: 3rem;
+      margin-top: 1.5rem;
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+
+    .totals div {
+      text-align: right;
+    }
+
+    .grand-total {
+      font-size: 1.3rem;
+      color: var(--primary);
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1.2rem;
+      justify-content: flex-end;
+      margin-top: 3rem;
+      padding-top: 1.8rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn {
+      padding: 0.9rem 1.8rem;
+      border: none;
+      border-radius: var(--radius);
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 1rem;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-secondary {
+      background: var(--gray);
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #4b5563;
+    }
+
+    .success-message,
+    .error-message {
+      padding: 1.2rem;
+      border-radius: var(--radius);
+      margin: 1.5rem 0;
+      text-align: center;
+      display: none;
+    }
+
+    .success-message {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+    }
+
+    .error-message {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+    }
+
+    @media (max-width: 992px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-actions {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">CoreInventory</div>
+
+      <ul class="nav-list">
+        <li class="nav-item"><a href="dashboard.html">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" />
+            </svg>
+            Dashboard
+          </a></li>
+        <li class="nav-item"><a href="products.html">
+            <svg viewBox="0 0 24 24">
+              <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z" />
+            </svg>
+            Products
+          </a></li>
+        <li class="nav-item"><a href="receipts.html" class="active">
+            <svg viewBox="0 0 24 24">
+              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z" />
+            </svg>
+            Receipts
+          </a></li>
+        <li class="nav-item"><a href="deliveries.html">
+            <svg viewBox="0 0 24 24">
+              <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM4 18V6h16v12H4z" />
+            </svg>
+            Deliveries
+          </a></li>
+        <li class="nav-item"><a href="transfers.html">
+            <svg viewBox="0 0 24 24">
+              <path d="M16 11l-6-6v4H2v4h8v4l6-6zM20 4h-6v2h6v12h-6v2h6c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z" />
+            </svg>
+            Transfers
+          </a></li>
+        <li class="nav-item"><a href="adjustments.html">
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+            </svg>
+            Adjustments
+          </a></li>
+        <li class="nav-item"><a href="stock-history.html">
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9z" />
+            </svg>
+            Stock History
+          </a></li>
+        <li class="nav-item"><a href="settings.html">
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.48-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" />
+            </svg>
+            Settings
+          </a></li>
+      </ul>
+    </aside>
+
+    <div>
+
+      <header class="header">
+        <h1>Create Receipt</h1>
+
+        <div class="user-info">
+          <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+          <div class="avatar">VI</div>
+          <div>
+            <div style="font-weight:600;">vgec ict 009 d2d</div>
+            <div style="font-size:0.88rem; color:var(--text-secondary);">Inventory Manager</div>
+          </div>
+        </div>
+      </header>
+
+      <main class="main-content">
+
+        <div class="form-container">
+
+          <div class="form-header">
+            <h2 class="form-title">New Incoming Receipt</h2>
+            <a href="receipts.html" style="color:var(--text-secondary); text-decoration:none; font-weight:500;">← Back
+              to list</a>
+          </div>
+
+          <form id="receiptForm" novalidate>
+
+            <!-- Header Info -->
+            <div class="form-section">
+              <h3 class="section-title">Receipt Details</h3>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label class="form-label" for="reference">Reference / PO Number <span
+                      style="color:var(--danger);">*</span></label>
+                  <input type="text" id="reference" class="input-field" placeholder="PO-2026-0456">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="supplier">Supplier <span style="color:var(--danger);">*</span></label>
+                  <select id="supplier" class="select-field">
+                    <option value="">Select supplier</option>
+                    <option value="techdist">Tech Distributors Pvt Ltd</option>
+                    <option value="globalgad">Global Gadgets Inc</option>
+                    <option value="ahmedabad">Ahmedabad Electronics</option>
+                    <option value="other">Other / New Supplier</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="receiptDate">Receipt Date <span
+                      style="color:var(--danger);">*</span></label>
+                  <input type="date" id="receiptDate" class="date-field" value="2026-03-14">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="expectedDate">Expected Delivery Date</label>
+                  <input type="date" id="expectedDate" class="date-field">
+                </div>
+              </div>
+            </div>
+
+            <!-- Line Items -->
+            <div class="form-section">
+              <h3 class="section-title">Products Received</h3>
+              <table class="line-items-table" id="lineItemsTable">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>SKU</th>
+                    <th>Quantity</th>
+                    <th>Unit Price (₹)</th>
+                    <th>Total (₹)</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="lineItemsBody">
+                  <!-- Dynamic rows added via JS -->
+                </tbody>
+              </table>
+
+              <button type="button" class="add-line-btn" onclick="addLineItem()">+ Add Product Line</button>
+            </div>
+
+            <!-- Totals & Notes -->
+            <div class="form-section">
+              <div class="totals">
+                <div>
+                  <div>Total Items:</div>
+                  <div id="totalItems">0</div>
+                </div>
+                <div>
+                  <div>Grand Total:</div>
+                  <div class="grand-total" id="grandTotal">₹ 0.00</div>
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-top:2rem;">
+                <label class="form-label" for="notes">Notes / Remarks</label>
+                <textarea id="notes" class="textarea-field"
+                  placeholder="Any special instructions, damage notes, batch info..."></textarea>
+              </div>
+            </div>
+
+            <div id="successMsg" class="success-message">
+              Receipt created successfully! Stock levels updated.
+            </div>
+
+            <div id="errorMsg" class="error-message">
+              Please fill all required fields and at least one product line.
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn btn-secondary"
+                onclick="window.location.href='receipts.html'">Cancel</button>
+              <button type="submit" class="btn btn-primary">Save Receipt</button>
+            </div>
+
+          </form>
+
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script>
+     
+  function loadUser(){
+  
+  const user = JSON.parse(localStorage.getItem("user"))
+  
+  document.querySelector(".avatar").textContent =
+  user.name.charAt(0).toUpperCase()
+  
+  document.querySelector(".user-info div div:nth-child(1)").textContent =
+  user.name
+  
+  document.querySelector(".user-info div div:nth-child(2)").textContent =
+  user.role
+  
+  }
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme') || 'light';
+      const next = current === 'light' ? 'dark' : 'light';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+    }
+
+    if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+
+    // Dynamic line items
+    let lineItemCount = 0;
+
+    function addLineItem() {
+      lineItemCount++;
+      const tbody = document.getElementById('lineItemsBody');
+      const row = document.createElement('tr');
+      row.innerHTML = `
+      <td><select class="product-select">
+        <option value="">Select product</option>
+        <option value="1">Wireless Mouse Logitech M185</option>
+<option value="2">USB Type-C Cable 2m</option>
+<option value="3">HDMI to VGA Adapter</option>
+<option value="4">Mechanical Keyboard RGB</option>
+<option value="5">Laptop Stand</option>
+      </select></td>
+      <td><input type="text" class="sku-input" readonly placeholder="Auto-filled"></td>
+      <td><input type="number" class="qty-input" min="1" value="1"></td>
+      <td><input type="number" class="price-input" step="0.01" value="0.00"></td>
+      <td class="line-total">₹ 0.00</td>
+      <td><button type="button" class="remove-btn" onclick="this.parentElement.parentElement.remove(); updateTotals()">Remove</button></td>
+    `;
+      tbody.appendChild(row);
+
+      // Auto-fill SKU on product select (demo)
+      row.querySelector('.product-select').addEventListener('change', function () {
+        const skuInput = row.querySelector('.sku-input');
+        skuInput.value = this.value ? this.value.toUpperCase() : '';
+      });
+
+      // Calculate line total & grand total on input
+      const inputs = row.querySelectorAll('.qty-input, .price-input');
+      inputs.forEach(input => {
+        input.addEventListener('input', updateTotals);
+      });
+
+      updateTotals();
+    }
+
+    function updateTotals() {
+      let totalItems = 0;
+      let grandTotal = 0;
+
+      document.querySelectorAll('#lineItemsBody tr').forEach(row => {
+        const qty = parseFloat(row.querySelector('.qty-input')?.value) || 0;
+        const price = parseFloat(row.querySelector('.price-input')?.value) || 0;
+        const lineTotal = qty * price;
+        row.querySelector('.line-total').textContent = `₹ ${lineTotal.toFixed(2)}`;
+        totalItems += qty;
+        grandTotal += lineTotal;
+      });
+
+      document.getElementById('totalItems').textContent = totalItems;
+      document.getElementById('grandTotal').textContent = `₹ ${grandTotal.toFixed(2)}`;
+    }
+
+    // Initial line item
+    addLineItem();
+
+    // Form submission
+    document.getElementById("receiptForm").addEventListener("submit", async function (e) {
+
+e.preventDefault();
+
+document.getElementById("errorMsg").style.display = "none";
+
+const supplier = document.getElementById("supplier").value;
+
+const rows = document.querySelectorAll("#lineItemsBody tr");
+
+let items = [];
+
+rows.forEach(row => {
+
+  const product = row.querySelector(".product-select").value;
+  const qty = parseInt(row.querySelector(".qty-input").value);
+
+  if(product && qty > 0){
+
+    items.push({
+      product_id: parseInt(product.replace("prod","")) || 1,
+      warehouse_id: 1,
+      quantity: qty
+    });
+
+  }
+
+});
+
+if(!supplier || items.length === 0){
+  document.getElementById("errorMsg").style.display="block";
+  return;
+}
+
+const receiptData = {
+  supplier: supplier,
+  items: items
+};
+
+try{
+
+  const response = await fetch("http://127.0.0.1:5000/api/receipts/create",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify(receiptData)
+  });
+
+  const result = await response.json();
+
+  if(response.ok){
+    document.getElementById("successMsg").style.display="block";
+  }else{
+    document.getElementById("errorMsg").style.display="block";
+  }
+
+  setTimeout(()=>{
+    window.location.href="receipts.html";
+  },1500);
+
+}catch(err){
+  console.error(err);
+  document.getElementById("errorMsg").style.display="block";
+}
+
+});
+  </script>
+
+</body>
+
+</html>

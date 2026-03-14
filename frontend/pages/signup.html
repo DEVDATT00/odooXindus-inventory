@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>CoreInventory • Create Account</title>
+
+  <!-- Google Fonts - Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="icon" href="data:," type="image/x-icon">
+
+  <style>
+    /***************************************************************
+     * CoreInventory - Design Tokens & Global Reset
+     ***************************************************************/
+    :root {
+      --bg:               #f8fafc;
+      --surface:          #ffffff;
+      --surface-hover:    #f1f5f9;
+      --text:             #0f172a;
+      --text-secondary:   #64748b;
+      --text-muted:       #94a3b8;
+      --border:           #e2e8f0;
+      --primary:          #3b82f6;
+      --primary-dark:     #2563eb;
+      --primary-light:    #60a5fa;
+      --success:          #10b981;
+      --warning:          #f59e0b;
+      --danger:           #ef4444;
+      --gray:             #6b7280;
+      --radius-sm:        6px;
+      --radius:           10px;
+      --radius-lg:        16px;
+      --shadow-sm:        0 1px 3px rgba(0,0,0,0.06);
+      --shadow:           0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+      --shadow-md:        0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+      --transition:       all 0.2s ease;
+    }
+
+    [data-theme="dark"] {
+      --bg:               #0f172a;
+      --surface:          #1e293b;
+      --surface-hover:    #334155;
+      --text:             #f1f5f9;
+      --text-secondary:   #94a3b8;
+      --text-muted:       #cbd5e1;
+      --border:           #334155;
+      --shadow-sm:        0 1px 3px rgba(0,0,0,0.3);
+      --shadow:           0 10px 15px -3px rgba(0,0,0,0.4);
+      --shadow-md:        0 20px 25px -5px rgba(0,0,0,0.5);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    /***************************************************************
+     * Signup Card Layout
+     ***************************************************************/
+    .auth-wrapper {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .auth-card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .auth-header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      padding: 2.8rem 2rem 2.2rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .logo {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -1.2px;
+    }
+
+    .logo span {
+      font-weight: 300;
+      opacity: 0.92;
+    }
+
+    .auth-header h1 {
+      font-size: 1.55rem;
+      font-weight: 600;
+      margin-top: 0.8rem;
+      opacity: 0.96;
+    }
+
+    .theme-toggle-btn {
+      position: absolute;
+      top: 1.6rem;
+      right: 1.6rem;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: white;
+      cursor: pointer;
+      opacity: 0.9;
+      transition: var(--transition);
+    }
+
+    .theme-toggle-btn:hover {
+      opacity: 1;
+      transform: scale(1.15);
+    }
+
+    .auth-body {
+      padding: 2.6rem 2.5rem 2.2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.65rem;
+      position: relative;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.96rem;
+      font-weight: 500;
+      margin-bottom: 0.6rem;
+      color: var(--text-secondary);
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 0.95rem 1.15rem;
+      font-size: 1rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg);
+      color: var(--text);
+      transition: var(--transition);
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3.5px rgba(59,130,246,0.16);
+    }
+
+    .input-field.error {
+      border-color: var(--danger);
+    }
+
+    .error-message {
+      color: var(--danger);
+      font-size: 0.82rem;
+      margin-top: 0.35rem;
+      display: none;
+    }
+
+    .password-wrapper {
+      position: relative;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 1.1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 1.15rem;
+    }
+
+    .password-strength {
+      height: 4px;
+      border-radius: var(--radius-sm);
+      margin-top: 0.5rem;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    .strength-weak  { background: var(--danger); }
+    .strength-fair  { background: var(--warning); width: 33%; }
+    .strength-good  { background: #f97316; width: 66%; }
+    .strength-strong{ background: var(--success); width: 100%; }
+
+    .btn-primary {
+      width: 100%;
+      padding: 1.05rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 1.06rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-top: 1rem;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1.5px);
+    }
+
+    .btn-primary:disabled {
+      background: var(--gray);
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .terms {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      text-align: center;
+      margin: 1.4rem 0 1.8rem;
+    }
+
+    .terms a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .terms a:hover {
+      text-decoration: underline;
+    }
+
+    .login-link {
+      text-align: center;
+      font-size: 0.97rem;
+      color: var(--text-secondary);
+      margin-top: 1.6rem;
+    }
+
+    .login-link a {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+      .auth-body { padding: 2rem 1.8rem 1.8rem; }
+      .auth-header { padding: 2.2rem 1.6rem 1.8rem; }
+      .logo { font-size: 2.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="auth-wrapper">
+
+    <div class="auth-card">
+
+      <div class="auth-header">
+        <div class="logo">Core<span>Inventory</span></div>
+        <h1>Create Your Account</h1>
+        <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle theme">☀️</button>
+      </div>
+
+      <div class="auth-body">
+
+        <form id="signupForm" novalidate>
+
+          <div class="form-group">
+            <label class="form-label" for="fullname">Full Name</label>
+            <input
+              type="text"
+              id="fullname"
+              class="input-field"
+              placeholder="John Doe"
+              required
+              minlength="2"
+              autocomplete="name"
+              autofocus
+            >
+            <div class="error-message" id="fullnameError">Name must be at least 2 characters</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="email">Email address</label>
+            <input
+              type="email"
+              id="email"
+              class="input-field"
+              placeholder="name@company.com"
+              required
+              autocomplete="email"
+            >
+            <div class="error-message" id="emailError">Please enter a valid email</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="password">Password</label>
+            <div class="password-wrapper">
+              <input
+                type="password"
+                id="password"
+                class="input-field"
+                placeholder="At least 8 characters"
+                required
+                minlength="8"
+                autocomplete="new-password"
+              >
+              <button type="button" class="password-toggle" onclick="togglePassword()">👁️</button>
+            </div>
+            <div id="passwordStrength" class="password-strength"></div>
+            <div class="error-message" id="passwordError">Password must be at least 8 characters</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="confirmPassword">Confirm Password</label>
+            <input
+              type="password"
+              id="confirmPassword"
+              class="input-field"
+              placeholder="Re-enter password"
+              required
+              autocomplete="new-password"
+            >
+            <div class="error-message" id="confirmError">Passwords do not match</div>
+          </div>
+
+          <div class="terms">
+            By signing up, you agree to our
+            <a href="#">Terms of Service</a> and
+            <a href="#">Privacy Policy</a>.
+          </div>
+
+          <button type="submit" class="btn-primary" id="signupBtn">Create Account</button>
+
+        </form>
+
+        <div class="login-link">
+          Already have an account? <a href="login.html">Sign in</a>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    // Theme toggle
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme') || 'light';
+      const next = current === 'light' ? 'dark' : 'light';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+
+      const btn = document.querySelector('.theme-toggle-btn');
+      btn.textContent = next === 'dark' ? '☀️' : '🌙';
+    }
+
+    if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      document.querySelector('.theme-toggle-btn').textContent = '☀️';
+    }
+
+    // Toggle password visibility
+    function togglePassword() {
+      const pwd = document.getElementById('password');
+      const toggle = document.querySelector('.password-toggle');
+      if (pwd.type === 'password') {
+        pwd.type = 'text';
+        toggle.textContent = '🙈';
+      } else {
+        pwd.type = 'password';
+        toggle.textContent = '👁️';
+      }
+    }
+
+    // Simple password strength visual feedback
+    const passwordInput = document.getElementById('password');
+    const strengthBar = document.getElementById('passwordStrength');
+
+    passwordInput.addEventListener('input', () => {
+      const val = passwordInput.value;
+      let strength = 'weak';
+
+      if (val.length >= 12 && /[A-Z]/.test(val) && /[0-9]/.test(val) && /[^A-Za-z0-9]/.test(val)) {
+        strength = 'strong';
+      } else if (val.length >= 10 && /[A-Z]/.test(val) && /[0-9]/.test(val)) {
+        strength = 'good';
+      } else if (val.length >= 8 && /[A-Z]/.test(val)) {
+        strength = 'fair';
+      }
+
+      strengthBar.className = 'password-strength strength-' + strength;
+    });
+
+    // Form validation (client-side only – real validation on backend)
+    document.getElementById('signupForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      let isValid = true;
+      const errors = document.querySelectorAll('.error-message');
+
+      errors.forEach(el => el.style.display = 'none');
+
+      // Name
+      const name = document.getElementById('fullname').value.trim();
+      if (name.length < 2) {
+        document.getElementById('fullnameError').style.display = 'block';
+        isValid = false;
+      }
+
+      // Email (very basic check)
+      const email = document.getElementById('email').value.trim();
+      if (!email.includes('@') || !email.includes('.')) {
+        document.getElementById('emailError').style.display = 'block';
+        isValid = false;
+      }
+
+      // Password length
+      const pwd = document.getElementById('password').value;
+      if (pwd.length < 8) {
+        document.getElementById('passwordError').style.display = 'block';
+        isValid = false;
+      }
+
+      // Confirm password match
+      const confirm = document.getElementById('confirmPassword').value;
+      if (pwd !== confirm) {
+        document.getElementById('confirmError').style.display = 'block';
+        isValid = false;
+      }
+
+      if (!isValid) return;
+
+      // Fake success (in real app → send to API)
+      alert('Account creation simulation successful!\nRedirecting to dashboard...');
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 1200);
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>CoreInventory • Stock History</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="icon" href="data:," type="image/x-icon">
+
+  <style>
+    :root {
+      --bg:               #f8fafc;
+      --surface:          #ffffff;
+      --surface-hover:    #f1f5f9;
+      --text:             #0f172a;
+      --text-secondary:   #64748b;
+      --text-muted:       #94a3b8;
+      --border:           #e2e8f0;
+      --primary:          #3b82f6;
+      --primary-dark:     #2563eb;
+      --primary-light:    #bfdbfe;
+      --success:          #10b981;
+      --warning:          #f59e0b;
+      --danger:           #ef4444;
+      --radius:           10px;
+      --shadow-sm:        0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md:        0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    [data-theme="dark"] {
+      --bg:               #0f172a;
+      --surface:          #1e293b;
+      --surface-hover:    #334155;
+      --text:             #f1f5f9;
+      --text-secondary:   #94a3b8;
+      --text-muted:       #64748b;
+      --border:           #334155;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    .layout-container { display: flex; }
+
+    .main-content {
+      flex: 1;
+      margin-left: 240px;
+      padding: 1.5rem;
+      transition: margin-left 0.3s;
+    }
+
+    @media (max-width: 992px) {
+      .main-content { margin-left: 0; }
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .page-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.25rem;
+      border-radius: var(--radius);
+      font-weight: 500;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover { background: var(--primary-dark); }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-outline:hover { background: var(--surface-hover); }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+    }
+
+    .filters {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .filter-group label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    input[type="text"], input[type="date"], select {
+      padding: 0.65rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      font-size: 0.94rem;
+      min-width: 160px;
+    }
+
+    .table-container { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.94rem;
+    }
+
+    th, td {
+      padding: 1rem 1.25rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: var(--surface-hover);
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      font-size: 0.82rem;
+      letter-spacing: 0.4px;
+    }
+
+    tr:hover { background: var(--surface-hover); }
+
+    .movement-type {
+      font-weight: 500;
+      padding: 0.35rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      display: inline-block;
+    }
+
+    .type-in  { background: #ecfdf5; color: #065f46; }
+    .type-out { background: #fef2f2; color: #991b1b; }
+    .type-adj { background: #eff6ff; color: #1e40af; }
+    .type-trf { background: #f3e8ff; color: #6b21a8; }
+
+    .delta {
+      font-weight: 600;
+    }
+
+    .delta-positive { color: var(--success); }
+    .delta-negative { color: var(--danger); }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .page-btn {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: 6px;
+      cursor: pointer;
+      min-width: 40px;
+      text-align: center;
+    }
+
+    .page-btn:hover { background: var(--surface-hover); }
+
+    .page-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    @media (max-width: 768px) {
+      .filters { flex-direction: column; }
+      .filter-group { width: 100%; }
+      input, select { min-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="layout-container">
+    <main class="main-content">
+
+      <header class="page-header">
+        <h1 class="page-title">Stock History</h1>
+        <div>
+          <button class="btn btn-outline">Export CSV</button>
+        </div>
+      </header>
+
+      <!-- Filters -->
+      <div class="filters">
+        <div class="filter-group">
+          <label for="product">Product / SKU</label>
+          <select id="product">
+            <option value="">All Products</option>
+            <option value="PROD-001">Wireless Mouse (PROD-001)</option>
+            <option value="PROD-002">USB-C Cable 2m (PROD-002)</option>
+            <option value="PROD-003">Laptop Stand (PROD-003)</option>
+            <option value="PROD-004">HDMI Cable (PROD-004)</option>
+            <option value="PROD-005">External SSD 1TB (PROD-005)</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="movementType">Movement Type</label>
+          <select id="movementType">
+            <option value="">All Types</option>
+            <option value="in">Receipt / In</option>
+            <option value="out">Delivery / Out</option>
+            <option value="adj">Adjustment</option>
+            <option value="trf">Transfer</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="dateFrom">From Date</label>
+          <input type="date" id="dateFrom" value="2026-01-01" />
+        </div>
+        <div class="filter-group">
+          <label for="dateTo">To Date</label>
+          <input type="date" id="dateTo" value="2026-03-14" />
+        </div>
+        <div class="filter-group">
+          <label for="search">Search Note / Ref</label>
+          <input type="text" id="search" placeholder="REF-XXXX or note..." />
+        </div>
+      </div>
+
+      <!-- History Table -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Stock Movement Log (Showing 1–20 of 342)</h2>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Date & Time</th>
+                <th>Product / SKU</th>
+                <th>Type</th>
+                <th>Reference</th>
+                <th>Δ Quantity</th>
+                <th>Balance After</th>
+                <th>By / Note</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody">
+              <tr>
+                <td>Mar 14, 2026 08:45</td>
+                <td>Wireless Mouse (PROD-001)</td>
+                <td><span class="movement-type type-out">Delivery</span></td>
+                <td>DEL-2026-0789</td>
+                <td class="delta delta-negative">-25</td>
+                <td>117</td>
+                <td>Rahul Sharma<br><small>Customer: TechTrend Retail</small></td>
+              </tr>
+              <tr>
+                <td>Mar 13, 2026 14:30</td>
+                <td>Wireless Mouse (PROD-001)</td>
+                <td><span class="movement-type type-trf">Transfer Out</span></td>
+                <td>TRF-2026-0156</td>
+                <td class="delta delta-negative">-30</td>
+                <td>142</td>
+                <td>Priya Patel<br><small>To Store B</small></td>
+              </tr>
+              <tr>
+                <td>Mar 12, 2026 11:15</td>
+                <td>Wireless Mouse (PROD-001)</td>
+                <td><span class="movement-type type-in">Receipt</span></td>
+                <td>REC-2026-0098</td>
+                <td class="delta delta-positive">+50</td>
+                <td>172</td>
+                <td>Admin<br><small>Supplier: ElectroHub</small></td>
+              </tr>
+              <tr>
+                <td>Mar 10, 2026 09:20</td>
+                <td>Wireless Mouse (PROD-001)</td>
+                <td><span class="movement-type type-adj">Adjustment</span></td>
+                <td>ADJ-2026-0041</td>
+                <td class="delta delta-negative">-20</td>
+                <td>122</td>
+                <td>Vikram Singh<br><small>Damaged in storage</small></td>
+              </tr>
+              <tr>
+                <td>Mar 08, 2026 16:55</td>
+                <td>Laptop Stand (PROD-003)</td>
+                <td><span class="movement-type type-out">Delivery</span></td>
+                <td>DEL-2026-0788</td>
+                <td class="delta delta-negative">-12</td>
+                <td>22</td>
+                <td>Priya Patel</td>
+              </tr>
+              <!-- More rows would be here in real implementation -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination">
+        <button class="page-btn">« Prev</button>
+        <button class="page-btn active">1</button>
+        <button class="page-btn">2</button>
+        <button class="page-btn">3</button>
+        <button class="page-btn">4</button>
+        <button class="page-btn">Next »</button>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    // ────────────────────────────────────────────────
+    //   stock-history.html — Embedded JavaScript
+    // ────────────────────────────────────────────────
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+      const productFilter   = document.getElementById('product');
+      const typeFilter      = document.getElementById('movementType');
+      const searchInput     = document.getElementById('search');
+      const tableBody       = document.getElementById('historyTableBody');
+
+      function applyFilters() {
+        const prod   = productFilter.value.toLowerCase();
+        const typ    = typeFilter.value.toLowerCase();
+        const term   = searchInput.value.toLowerCase().trim();
+
+        const rows = tableBody.querySelectorAll('tr');
+
+        rows.forEach(row => {
+          const text = row.textContent.toLowerCase();
+
+          const matchesProduct = !prod || text.includes(prod);
+          const matchesType    = !typ  || text.includes(typ);
+          const matchesSearch  = !term || text.includes(term);
+
+          row.style.display = (matchesProduct && matchesType && matchesSearch) ? '' : 'none';
+        });
+      }
+
+      if (productFilter)   productFilter.addEventListener('change', applyFilters);
+      if (typeFilter)      typeFilter.addEventListener('change', applyFilters);
+      if (searchInput)     searchInput.addEventListener('input', applyFilters);
+
+      // Theme persistence
+      if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+
+      // Optional: date range filter placeholder
+      const dateFrom = document.getElementById('dateFrom');
+      const dateTo   = document.getElementById('dateTo');
+      if (dateFrom && dateTo) {
+        [dateFrom, dateTo].forEach(el => {
+          el.addEventListener('change', () => {
+            console.log('Date range filter (demo):', dateFrom.value, 'to', dateTo.value);
+            // In real app → reload data or filter rows
+          });
+        });
+      }
+    });
+  </script>
+
+</body>
+</html>
